@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sens | Profesjonalna Stylizacja Paznokci</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <header>
+        <nav>
+            <div class="logo">SENS</div>
+            <ul>
+                <li><a href="#home">Start</a></li>
+                <li><a href="#portfolio">Galeria</a></li>
+                <li><a href="#booking">Rezerwacja</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <h1>Sens</h1>
+        <p>Twoje dłonie, nasza pasja.</p>
+        <a href="#booking" class="btn">Umów wizytę</a>
+    </section>
+
+    <section id="portfolio">
+        <h2>Nasze Prace</h2>
+        <div class="gallery">
+            <div class="photo">Zdjęcie 1</div>
+            <div class="photo">Zdjęcie 2</div>
+            <div class="photo">Zdjęcie 3</div>
+            <div class="photo">Zdjęcie 4</div>
+        </div>
+    </section>
+
+    <section id="booking">
+        <h2>Umów się na wizytę</h2>
+        <form id="bookingForm">
+            <input type="text" id="name" placeholder="Twoje imię" required>
+            <input type="tel" id="phone" placeholder="Twój numer telefonu" required>
+            <select id="service">
+                <option value="manicure">Manicure hybrydowy</option>
+                <option value="zel">Przedłużanie żelowe</option>
+                <option value="pedicure">Pedicure</option>
+            </select>
+            <button type="submit" class="btn">Wyślij zgłoszenie</button>
+        </form>
+        <p id="responseMessage"></p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Sens - Stylizacja Paznokci</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
