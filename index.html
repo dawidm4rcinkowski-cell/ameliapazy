@@ -3,57 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sens | Profesjonalna Stylizacja Paznokci</title>
-    <link rel="stylesheet" href="style.css">
+    <title>NailArt - Salon Stylizacji Paznokci</title>
+    
+    <!-- Dodajemy eleganckie fonty z Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ZMIENNE I RESET --- */
+        :root {
+            --primary: #d4a373; /* Elegancki beż/złoto */
+            --secondary: #faedcd; /* Jasny kremowy */
+            --dark: #333333;
+            --light: #ffffff;
+            --text: #4a4a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background-color: var(--light);
+            /* Zapewnia miejsce na fixed navbar */
+            padding-top: 80px; 
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: var(--light);
+            padding: 0 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            height: 70px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links .btn-book {
+            background: var(--primary);
+            color: var(--light);
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .nav-links .btn-book:hover {
+            background: #b0895f;
+            color: var(--light);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Placeholder dla ładnego tła - delikatny gradient i zdjęcie w tle */
+            background: linear-gradient(rgba(250, 237, 205, 0.85), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+            color: #555;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--dark);
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--dark);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--dark);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        /* --- RESPONSIVE DESIGN (MOBILE) --- */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Do zrobienia w przyszłości: hamburger menu */
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">SENS</div>
-            <ul>
-                <li><a href="#home">Start</a></li>
-                <li><a href="#portfolio">Galeria</a></li>
-                <li><a href="#booking">Rezerwacja</a></li>
-            </ul>
-        </nav>
+    <!-- --- NAVBAR --- -->
+    <nav id="navbar">
+        <a href="#" class="logo">NailArt.</a>
+        <ul class="nav-links">
+            <li><a href="#hero">Start</a></li>
+            <li><a href="#uslugi">Usługi</a></li>
+            <li><a href="#galeria">Galeria</a></li>
+            <!-- Zgodnie z ustaleniami, ścieżka do zasobów/inwentaryzacji -->
+            <li><a href="inwa.html">Zarządzanie</a></li>
+            <li><a href="#rezerwacja" class="btn-book">Umów wizytę</a></li>
+        </ul>
+    </nav>
+
+    <!-- --- HERO SECTION --- -->
+    <header id="hero" class="hero">
+        <h1>Twoje dłonie<br>w najlepszych rękach</h1>
+        <p>Odkryj profesjonalną stylizację paznokci. Zadbamy o Twój wygląd, relaks i perfekcyjny detal podczas każdej wizyty.</p>
+        <div class="hero-btns">
+            <a href="#rezerwacja" class="btn btn-primary">Zarezerwuj termin</a>
+            <a href="#galeria" class="btn btn-outline">Zobacz realizacje</a>
+        </div>
     </header>
 
-    <section id="home" class="hero">
-        <h1>Sens</h1>
-        <p>Twoje dłonie, nasza pasja.</p>
-        <a href="#booking" class="btn">Umów wizytę</a>
-    </section>
+    <!-- --- JAVASCRIPT --- -->
+    <script>
+        /* Skrypt dodający klasę do navbara podczas przewijania (efekt zmniejszenia) */
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.getElementById('navbar');
 
-    <section id="portfolio">
-        <h2>Nasze Prace</h2>
-        <div class="gallery">
-            <div class="photo">Zdjęcie 1</div>
-            <div class="photo">Zdjęcie 2</div>
-            <div class="photo">Zdjęcie 3</div>
-            <div class="photo">Zdjęcie 4</div>
-        </div>
-    </section>
-
-    <section id="booking">
-        <h2>Umów się na wizytę</h2>
-        <form id="bookingForm">
-            <input type="text" id="name" placeholder="Twoje imię" required>
-            <input type="tel" id="phone" placeholder="Twój numer telefonu" required>
-            <select id="service">
-                <option value="manicure">Manicure hybrydowy</option>
-                <option value="zel">Przedłużanie żelowe</option>
-                <option value="pedicure">Pedicure</option>
-            </select>
-            <button type="submit" class="btn">Wyślij zgłoszenie</button>
-        </form>
-        <p id="responseMessage"></p>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 Sens - Stylizacja Paznokci</p>
-    </footer>
-
-    <script src="script.js"></script>
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
