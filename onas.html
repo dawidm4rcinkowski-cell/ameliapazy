@@ -9,9 +9,13 @@
 
     <style>
         :root {
-            --primary: #d4a373;
-            --primary-dark: #b0895f;
-            --secondary: #faedcd;
+            --primary: #c1633e;
+            --primary-dark: #a04e30;
+            --secondary: #f2e6d5;
+            --accent-green: #7c8c5f;
+            --accent-green-light: #e6ebdd;
+            --accent-ochre: #c99a3f;
+            --accent-ochre-light: #f5ead0;
             --dark: #333333;
             --light: #ffffff;
             --text: #4a4a4a;
@@ -75,10 +79,38 @@
         }
 
         .page-header {
+            position: relative;
             padding: 5rem 5% 4rem;
             text-align: center;
-            background: linear-gradient(rgba(250, 237, 205, 0.6), rgba(255, 255, 255, 0.95));
+            background: linear-gradient(rgba(242, 230, 213, 0.6), rgba(255, 255, 255, 0.95));
+            overflow: hidden;
         }
+        .page-header::before,
+        .page-header::after,
+        .page-header .blob-ochre {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.35;
+            z-index: 0;
+        }
+        .page-header::before {
+            width: 260px; height: 260px;
+            background: var(--accent-green);
+            top: -80px; left: 6%;
+        }
+        .page-header::after {
+            width: 220px; height: 220px;
+            background: var(--primary);
+            bottom: -70px; right: 8%;
+        }
+        .page-header .blob-ochre {
+            width: 180px; height: 180px;
+            background: var(--accent-ochre);
+            top: 20%; right: 22%;
+        }
+        .page-header > * { position: relative; z-index: 1; }
         .page-header p.eyebrow {
             font-size: 0.85rem;
             letter-spacing: 0.16em;
@@ -145,6 +177,14 @@
             background: var(--secondary);
             display: flex; align-items: center; justify-content: center;
             color: var(--primary-dark);
+        }
+        .value-card .icon.icon-green {
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+        .value-card .icon.icon-ochre {
+            background: var(--accent-ochre-light);
+            color: var(--accent-ochre);
         }
         .value-card h3 { font-size: 1.15rem; margin-bottom: 0.6rem; color: var(--dark); }
         .value-card p { font-size: 0.92rem; color: #666; }
@@ -214,6 +254,20 @@
             border-radius: 20px;
             font-weight: 600;
         }
+        .team-tags span.tag-green {
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+        .team-tags span.tag-ochre {
+            background: var(--accent-ochre-light);
+            color: var(--accent-ochre);
+        }
+
+        .team-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 1rem; }
+        .team-dots span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .team-dots span:nth-child(1) { background: var(--primary); }
+        .team-dots span:nth-child(2) { background: var(--accent-ochre); }
+        .team-dots span:nth-child(3) { background: var(--accent-green); }
 
         @media (max-width: 768px) {
             .team-grid { grid-template-columns: 1fr; }
@@ -255,6 +309,7 @@
     </nav>
 
     <header class="page-header">
+        <span class="blob-ochre"></span>
         <p class="eyebrow">Poznaj nas</p>
         <h1>Dwie siostry, jedna pasja</h1>
         <p class="lead">SENS to miejsce stworzone przez siostry, które od dziecka marzyły o tym samym — o pracy, w której precyzja spotyka się z troską o drugiego człowieka.</p>
@@ -284,14 +339,14 @@
                     <p>Obie ukończyłyśmy studia kosmetologiczne, a naszą wiedzę stale poszerzamy na kursach i szkoleniach branżowych.</p>
                 </div>
                 <div class="value-card">
-                    <div class="icon">
+                    <div class="icon icon-ochre">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
                     </div>
                     <h3>Rodzinne podejście</h3>
                     <p>Prowadzimy salon razem, jako siostry — to daje nam wspólny język, zaufanie i dbałość o każdy szczegół.</p>
                 </div>
                 <div class="value-card">
-                    <div class="icon">
+                    <div class="icon icon-green">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
                     </div>
                     <h3>Higiena i precyzja</h3>
@@ -303,6 +358,7 @@
 
     <section class="team" id="zespol">
         <p class="eyebrow">Zespół</p>
+        <div class="team-dots"><span></span><span></span><span></span></div>
         <h2>Poznaj nasze stylistki</h2>
         <p class="intro">Za każdą wizytą w SENS stoją dwie osoby, które łączy nie tylko wykształcenie, ale i wspólna droga do stworzenia tego miejsca.</p>
 
@@ -315,8 +371,8 @@
                     <p>Absolwentka kosmetologii, od lat specjalizuje się w precyzyjnych stylizacjach żelowych i zdobieniach. To ona czuwa nad jakością i standardami pracy w salonie.</p>
                     <div class="team-tags">
                         <span>Stylizacja żelowa</span>
-                        <span>Przedłużanie</span>
-                        <span>Zdobienia</span>
+                        <span class="tag-ochre">Przedłużanie</span>
+                        <span class="tag-green">Zdobienia</span>
                     </div>
                 </div>
             </div>
@@ -329,8 +385,8 @@
                     <p>Także absolwentka kosmetologii, skupia się na pielęgnacji dłoni i stóp oraz pedicure hybrydowym. Dba o to, by każda wizyta była też momentem relaksu.</p>
                     <div class="team-tags">
                         <span>Manicure</span>
-                        <span>Pedicure hybrydowy</span>
-                        <span>Pielęgnacja</span>
+                        <span class="tag-ochre">Pedicure hybrydowy</span>
+                        <span class="tag-green">Pielęgnacja</span>
                     </div>
                 </div>
             </div>
