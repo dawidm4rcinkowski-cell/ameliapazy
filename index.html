@@ -82,6 +82,29 @@
         }
         .nav-links .btn-book:hover { background: var(--primary-dark); color: var(--light); }
 
+        /* =========================================================
+           HAMBURGER — widoczny tylko na wąskich ekranach mobilnych
+           ========================================================= */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+        }
+        .hamburger span {
+            width: 26px;
+            height: 2px;
+            background: var(--dark);
+            transition: all 0.3s ease;
+        }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
         .hero {
             min-height: calc(100vh - 80px);
             display: flex;
@@ -118,8 +141,35 @@
         .btn-outline:hover { background: var(--dark); color: var(--light); transform: translateY(-2px); }
 
         @media (max-width: 768px) {
-            .nav-links { display: none; }
             .hero h1 { font-size: 3rem; }
+        }
+
+        /* Tylko na wąskich telefonach chowamy menu i pokazujemy hamburger.
+           Tablety (np. iPad w pionie, ~768-820px) zachowują pełne menu. */
+        @media (max-width: 480px) {
+            .hamburger { display: flex; }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                background: var(--light);
+                padding: 1.5rem 5%;
+                gap: 1.2rem;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+                transform: translateY(-150%);
+                opacity: 0;
+                transition: all 0.3s ease;
+                pointer-events: none;
+            }
+            .nav-links.open {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
         }
 
         /* =========================================================
@@ -185,12 +235,16 @@
 
     <nav id="navbar">
         <a href="index.html" class="logo">SENS.</a>
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li><a href="index.html#hero" class="active">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
+            <li><a href="index.html#galeria">Galeria</a></li>
             <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
         </ul>
+        <button class="hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
     </nav>
 
     <header id="hero" class="hero">
@@ -217,7 +271,7 @@
                 <img src="images/nail-4.jpeg" alt="Stylizacja paznokci SENS 4" loading="lazy">
                 <img src="images/nail-5.jpeg" alt="Stylizacja paznokci SENS 5" loading="lazy">
                 <img src="images/nail-6.jpeg" alt="Stylizacja paznokci SENS 6" loading="lazy">
-                <img src="images/nail-7.jpeg" alt="Stylizacja paznokci SENS 7" loading="lazy">e
+                <img src="images/nail-7.jpeg" alt="Stylizacja paznokci SENS 7" loading="lazy">
                 <img src="images/nail-8.jpeg" alt="Stylizacja paznokci SENS 8" loading="lazy">
                 <img src="images/nail-9.jpeg" alt="Stylizacja paznokci SENS 9" loading="lazy">
                 <img src="images/nail-10.jpeg" alt="Stylizacja paznokci SENS 10" loading="lazy">
@@ -241,12 +295,30 @@
     </section>
 
     <script>
-        /* Efekt zmniejszenia navbara podczas przewijania */
         document.addEventListener('DOMContentLoaded', () => {
             const navbar = document.getElementById('navbar');
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) navbar.classList.add('scrolled');
                 else navbar.classList.remove('scrolled');
+            });
+
+            /* Menu hamburgerowe (mobile) */
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+
+            hamburger.addEventListener('click', () => {
+                const isOpen = navLinks.classList.toggle('open');
+                hamburger.classList.toggle('open', isOpen);
+                hamburger.setAttribute('aria-expanded', isOpen);
+            });
+
+            /* Zamknij menu po kliknięciu w link */
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('open');
+                    hamburger.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                });
             });
         });
     </script>
