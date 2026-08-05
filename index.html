@@ -121,6 +121,64 @@
             .nav-links { display: none; }
             .hero h1 { font-size: 3rem; }
         }
+
+        /* =========================================================
+           GALERIA — automatycznie przewijający się pasek zdjęć
+           ========================================================= */
+        .gallery {
+            padding: 6rem 0 6.5rem;
+            background: var(--secondary);
+            text-align: center;
+            overflow: hidden;
+        }
+        .gallery-eyebrow {
+            font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+            color: var(--primary-dark); font-weight: 600; margin-bottom: 10px;
+        }
+        .gallery h2 { font-size: 2.3rem; color: var(--dark); margin-bottom: 12px; padding: 0 5%; }
+        .gallery > p.lead { color: #6f6f6f; max-width: 480px; margin: 0 auto 3rem; padding: 0 5%; font-size: 1rem; }
+
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%);
+        }
+        .marquee-track {
+            display: flex;
+            gap: 1.4rem;
+            width: max-content;
+            animation: marquee-scroll 42s linear infinite;
+        }
+        .marquee:hover .marquee-track,
+        .marquee:active .marquee-track { animation-play-state: paused; }
+
+        .marquee-track img {
+            width: 220px;
+            height: 275px;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 18px 35px rgba(0,0,0,0.14);
+            flex-shrink: 0;
+            display: block;
+        }
+
+        @keyframes marquee-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .gallery-cta {
+            margin-top: 3rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .marquee-track img { width: 160px; height: 200px; }
+            .marquee-track { gap: 1rem; }
+        }
     </style>
 </head>
 <body>
@@ -130,6 +188,7 @@
         <ul class="nav-links">
             <li><a href="index.html#hero" class="active">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
+            <li><a href="index.html#galeria">Galeria</a></li>
             <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
         </ul>
@@ -142,6 +201,45 @@
             <a href="rezerwacje.html" class="btn btn-primary">Zarezerwuj termin</a>
         </div>
     </header>
+
+    <!-- =========================================================
+         GALERIA — przewijający się pasek realizacji
+         ========================================================= -->
+    <section class="gallery" id="galeria">
+        <p class="gallery-eyebrow">Nasze realizacje</p>
+        <h2>Zobacz nasze stylizacje</h2>
+        <p class="lead">Wybór najnowszych realizacji prosto z naszego Instagrama.</p>
+
+        <div class="marquee">
+            <div class="marquee-track">
+                <img src="images/nail-1.jpg" alt="Stylizacja paznokci SENS 1" loading="lazy">
+                <img src="images/nail-2.jpg" alt="Stylizacja paznokci SENS 2" loading="lazy">
+                <img src="images/nail-3.jpg" alt="Stylizacja paznokci SENS 3" loading="lazy">
+                <img src="images/nail-4.jpg" alt="Stylizacja paznokci SENS 4" loading="lazy">
+                <img src="images/nail-5.jpg" alt="Stylizacja paznokci SENS 5" loading="lazy">
+                <img src="images/nail-6.jpg" alt="Stylizacja paznokci SENS 6" loading="lazy">
+                <img src="images/nail-7.jpg" alt="Stylizacja paznokci SENS 7" loading="lazy">
+                <img src="images/nail-8.jpg" alt="Stylizacja paznokci SENS 8" loading="lazy">
+                <img src="images/nail-9.jpg" alt="Stylizacja paznokci SENS 9" loading="lazy">
+                <img src="images/nail-10.jpg" alt="Stylizacja paznokci SENS 10" loading="lazy">
+                <!-- powtórzone dla płynnej, nieskończonej pętli -->
+                <img src="images/nail-1.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-2.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-3.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-4.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-5.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-6.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-7.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-8.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-9.jpg" alt="" aria-hidden="true" loading="lazy">
+                <img src="images/nail-10.jpg" alt="" aria-hidden="true" loading="lazy">
+            </div>
+        </div>
+
+        <div class="gallery-cta">
+            <a href="https://www.instagram.com/amelia.kurczaba.juz.nie.makeup" target="_blank" rel="noopener" class="btn btn-outline">Zobacz więcej na Instagramie</a>
+        </div>
+    </section>
 
     <script>
         /* Efekt zmniejszenia navbara podczas przewijania */
