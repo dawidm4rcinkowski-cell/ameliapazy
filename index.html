@@ -16,6 +16,8 @@
             --light: #ffffff;
             --text: #4a4a4a;
             --line: rgba(51,51,51,0.12);
+            --skin: #e8bd94;
+            --skin-shadow: #cf9c6e;
         }
 
         * {
@@ -116,6 +118,129 @@
             .nav-links { display: none; }
             .hero h1 { font-size: 3rem; }
         }
+
+        /* =========================================================
+           SEKCJA "WYBIERZ SWÓJ WZÓR" — przeciągalna dłoń z paznokciami
+           ========================================================= */
+        .sens-patterns {
+            padding: 6rem 5% 7rem;
+            background: var(--secondary);
+            text-align: center;
+            overflow: hidden;
+        }
+        .sens-patterns-eyebrow {
+            font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+            color: var(--primary-dark); font-weight: 600; margin-bottom: 10px;
+        }
+        .sens-patterns h2 { font-size: 2.4rem; color: var(--dark); margin-bottom: 12px; }
+        .sens-patterns > p { color: #6f6f6f; max-width: 480px; margin: 0 auto 3rem; font-size: 1rem; }
+
+        .sens-hand-stage {
+            position: relative;
+            max-width: 380px;
+            margin: 0 auto;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+        }
+
+        .sens-hand-wrap {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            cursor: grab;
+        }
+        .sens-hand-wrap.sens-dragging { cursor: grabbing; }
+
+        .sens-hand {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 340px;
+            transition: transform .15s ease;
+        }
+        .sens-hand-wrap.sens-dragging .sens-hand { transition: none; }
+
+        .sens-palm {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 168px; height: 190px;
+            background: linear-gradient(160deg, var(--skin), var(--skin-shadow));
+            border-radius: 45% 45% 40% 40% / 55% 55% 35% 35%;
+            box-shadow: inset -8px -10px 22px rgba(0,0,0,0.08);
+        }
+
+        .sens-finger {
+            position: absolute;
+            bottom: 128px;
+            width: 34px;
+            border-radius: 17px 17px 15px 15px;
+            background: linear-gradient(160deg, var(--skin), var(--skin-shadow));
+            transform-origin: bottom center;
+            box-shadow: inset -4px -4px 10px rgba(0,0,0,0.08);
+        }
+        .sens-finger.sens-thumb   { left: -6px;  bottom: 60px; width: 40px; height: 105px; transform: rotate(-42deg); border-radius: 20px; }
+        .sens-finger.sens-index   { left: 30px;  height: 150px; transform: rotate(-11deg); }
+        .sens-finger.sens-middle  { left: 68px;  height: 172px; transform: rotate(0deg); }
+        .sens-finger.sens-ring    { left: 106px; height: 158px; transform: rotate(10deg); }
+        .sens-finger.sens-pinky   { left: 142px; width: 28px; height: 122px; transform: rotate(19deg); }
+
+        .sens-nail {
+            position: absolute;
+            top: 6px; left: 50%;
+            transform: translateX(-50%);
+            width: 72%;
+            height: 34%;
+            border-radius: 50% 50% 35% 35% / 65% 65% 30% 30%;
+            transition: background .35s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .sens-hand-arrow {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background: var(--light);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+            z-index: 5;
+        }
+        .sens-hand-arrow:hover { background: var(--primary); border-color: var(--primary); color: var(--light); }
+        .sens-hand-arrow.sens-prev { left: -10px; }
+        .sens-hand-arrow.sens-next { right: -10px; }
+
+        .sens-pattern-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin-top: 1.5rem;
+        }
+        .sens-hint-swipe {
+            font-size: 12.5px;
+            color: #9a9a9a;
+            margin-top: 4px;
+        }
+
+        .sens-pattern-dots {
+            display: flex; justify-content: center; gap: 8px; margin-top: 1.2rem;
+        }
+        .sens-pattern-dots button {
+            width: 9px; height: 9px; border-radius: 50%;
+            border: none; background: var(--line); cursor: pointer; padding: 0;
+            transition: background .2s, transform .2s;
+        }
+        .sens-pattern-dots button.sens-active { background: var(--primary); transform: scale(1.25); }
+
+        @media (max-width: 480px) {
+            .sens-hand-arrow.sens-prev { left: 4px; }
+            .sens-hand-arrow.sens-next { right: 4px; }
+        }
     </style>
 </head>
 <body>
@@ -125,7 +250,7 @@
         <ul class="nav-links">
             <li><a href="#hero">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
-            <li><a href="#galeria">Galeria</a></li>
+            <li><a href="#wzory">Galeria</a></li>
             <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacja.html" class="btn-book">Umów wizytę</a></li>
         </ul>
@@ -136,11 +261,41 @@
         <p>Odkryj profesjonalną stylizację paznokci. Zadbamy o Twój wygląd, relaks i perfekcyjny detal podczas każdej wizyty.</p>
         <div class="hero-btns">
             <a href="rezerwacja.html" class="btn btn-primary">Zarezerwuj termin</a>
-            <a href="#galeria" class="btn btn-outline">Zobacz realizacje</a>
+            <a href="#wzory" class="btn btn-outline">Zobacz realizacje</a>
         </div>
     </header>
 
+    <!-- =========================================================
+         WYBIERZ SWÓJ WZÓR — interaktywna dłoń (przeciągnij lub kliknij)
+         ========================================================= -->
+    <section class="sens-patterns" id="wzory">
+        <p class="sens-patterns-eyebrow">Galeria</p>
+        <h2>Wybierz swój wzór</h2>
+        <p>Przeciągnij dłoń w lewo lub w prawo — albo kliknij strzałki — żeby zobaczyć nasze ulubione stylizacje.</p>
+
+        <div class="sens-hand-stage">
+            <div class="sens-hand-wrap" id="sensHandWrap">
+                <button class="sens-hand-arrow sens-prev" id="sensHandPrev" aria-label="Poprzedni wzór">&lsaquo;</button>
+                <button class="sens-hand-arrow sens-next" id="sensHandNext" aria-label="Następny wzór">&rsaquo;</button>
+
+                <div class="sens-hand" id="sensHand">
+                    <div class="sens-finger sens-thumb"><div class="sens-nail"></div></div>
+                    <div class="sens-finger sens-index"><div class="sens-nail"></div></div>
+                    <div class="sens-finger sens-middle"><div class="sens-nail"></div></div>
+                    <div class="sens-finger sens-ring"><div class="sens-nail"></div></div>
+                    <div class="sens-finger sens-pinky"><div class="sens-nail"></div></div>
+                    <div class="sens-palm"></div>
+                </div>
+            </div>
+
+            <p class="sens-pattern-label" id="sensPatternLabel"></p>
+            <p class="sens-hint-swipe">&larr; przeciągnij, aby zmienić wzór &rarr;</p>
+            <div class="sens-pattern-dots" id="sensPatternDots"></div>
+        </div>
+    </section>
+
     <script>
+        /* Efekt zmniejszenia navbara podczas przewijania */
         document.addEventListener('DOMContentLoaded', () => {
             const navbar = document.getElementById('navbar');
             window.addEventListener('scroll', () => {
@@ -148,6 +303,83 @@
                 else navbar.classList.remove('scrolled');
             });
         });
+
+        /* --- Interaktywna dłoń ze wzorami paznokci --- */
+        (function(){
+            var PATTERNS = [
+                { name: 'Nude Glow',      css: 'linear-gradient(160deg, #f6e6d2, #d9b48f)' },
+                { name: 'Francuski',      css: 'linear-gradient(to top, #ffffff 0%, #ffffff 24%, #f3dcc0 24%, #f3dcc0 100%)' },
+                { name: 'Marmurek',       css: 'radial-gradient(circle at 28% 22%, rgba(255,255,255,.85), transparent 42%), radial-gradient(circle at 72% 65%, rgba(176,137,95,.55), transparent 55%), #f1e4d2' },
+                { name: 'Grafika w kropki', css: 'repeating-radial-gradient(circle at center, #ffffff 0 2.5px, #cf9c6e 2.5px 13px)' },
+                { name: 'Złote iskry',    css: 'linear-gradient(135deg, #d4a373, #b0895f), repeating-linear-gradient(45deg, rgba(255,255,255,.3) 0 2px, transparent 2px 9px)' }
+            ];
+
+            var current = 0;
+            var nails = document.querySelectorAll('.sens-nail');
+            var label = document.getElementById('sensPatternLabel');
+            var dotsWrap = document.getElementById('sensPatternDots');
+            var wrap = document.getElementById('sensHandWrap');
+            var hand = document.getElementById('sensHand');
+
+            function buildDots(){
+                dotsWrap.innerHTML = '';
+                PATTERNS.forEach(function(p, i){
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.setAttribute('aria-label', p.name);
+                    b.addEventListener('click', function(){ setPattern(i); });
+                    dotsWrap.appendChild(b);
+                });
+            }
+
+            function setPattern(index){
+                current = (index + PATTERNS.length) % PATTERNS.length;
+                var p = PATTERNS[current];
+                nails.forEach(function(n){ n.style.background = p.css; });
+                label.textContent = p.name;
+                Array.from(dotsWrap.children).forEach(function(dot, i){
+                    dot.classList.toggle('sens-active', i === current);
+                });
+            }
+
+            document.getElementById('sensHandPrev').addEventListener('click', function(){ setPattern(current - 1); });
+            document.getElementById('sensHandNext').addEventListener('click', function(){ setPattern(current + 1); });
+
+            // Przeciąganie myszą / palcem
+            var isDown = false, startX = 0, dragX = 0;
+            var THRESHOLD = 45;
+
+            function dragStart(x){
+                isDown = true; startX = x; dragX = 0;
+                wrap.classList.add('sens-dragging');
+            }
+            function dragMove(x){
+                if (!isDown) return;
+                dragX = x - startX;
+                var clamped = Math.max(-60, Math.min(60, dragX));
+                hand.style.transform = 'translateX(-50%) translateX(' + (clamped * 0.4) + 'px) rotate(' + (clamped * 0.04) + 'deg)';
+            }
+            function dragEnd(){
+                if (!isDown) return;
+                isDown = false;
+                wrap.classList.remove('sens-dragging');
+                hand.style.transform = 'translateX(-50%)';
+                if (dragX <= -THRESHOLD) setPattern(current + 1);
+                else if (dragX >= THRESHOLD) setPattern(current - 1);
+                dragX = 0;
+            }
+
+            wrap.addEventListener('mousedown', function(e){ dragStart(e.clientX); e.preventDefault(); });
+            window.addEventListener('mousemove', function(e){ dragMove(e.clientX); });
+            window.addEventListener('mouseup', dragEnd);
+
+            wrap.addEventListener('touchstart', function(e){ dragStart(e.touches[0].clientX); }, { passive: true });
+            wrap.addEventListener('touchmove', function(e){ dragMove(e.touches[0].clientX); }, { passive: true });
+            wrap.addEventListener('touchend', dragEnd);
+
+            buildDots();
+            setPattern(0);
+        })();
     </script>
 </body>
-</html>
+</html
