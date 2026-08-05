@@ -9,12 +9,17 @@
 
     <style>
         :root {
-            --primary: #d4a373;
-            --primary-dark: #b0895f;
-            --secondary: #faedcd;
+            --primary: #c1633e;
+            --primary-dark: #a04e30;
+            --secondary: #f2e6d5;
+            --accent-green: #7c8c5f;
+            --accent-green-light: #e6ebdd;
+            --accent-ochre: #c99a3f;
+            --accent-ochre-light: #f5ead0;
             --dark: #333333;
             --light: #ffffff;
             --text: #4a4a4a;
+            --line: rgba(51,51,51,0.12);
         }
 
         * {
@@ -61,6 +66,7 @@
 
         .nav-links a { font-weight: 400; font-size: 0.95rem; transition: color 0.3s ease; }
         .nav-links a:hover { color: var(--primary); }
+        .nav-links a.active { color: var(--primary-dark); font-weight: 600; }
 
         .nav-links .btn-book {
             background: var(--primary);
@@ -83,7 +89,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(250, 237, 205, 0.85), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            background: linear-gradient(rgba(242, 230, 213, 0.85), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
             padding: 2rem;
         }
 
@@ -120,9 +126,9 @@
 <body>
 
     <nav id="navbar">
-        <a href="#" class="logo">SENS.</a>
+        <a href="index.html" class="logo">SENS.</a>
         <ul class="nav-links">
-            <li><a href="#hero">Start</a></li>
+            <li><a href="index.html#hero" class="active">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
             <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
