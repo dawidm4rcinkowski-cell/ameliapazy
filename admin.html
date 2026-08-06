@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admina - SENS Salon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-    
+    <title>Panel Administratora - SENS Salon</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <style>
         :root {
@@ -18,117 +18,144 @@
             --dark: #333333;
             --light: #ffffff;
             --line: rgba(51,51,51,0.12);
+            --danger: #d9534f;
+            --success: #5cb85c;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background: #faf8f5; color: var(--dark); padding: 40px 5%; }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Montserrat', sans-serif; color: var(--dark); background: #f9f6f0; padding: 20px; }
+        .admin-card { max-width: 900px; margin: 0 auto; background: var(--light); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 
-        .container { max-width: 1000px; margin: 0 auto; }
-        .card { background: var(--light); border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .btn { padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: 600; font-family: inherit; }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-danger { background: #e74c3c; color: #fff; }
-        .btn-secondary { background: none; border: 1px solid var(--line); color: var(--dark); }
+        h1, h2 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
+        .stylist-selector { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid var(--secondary); padding-bottom: 15px; }
+        .tab-btn { padding: 10px 20px; border: none; background: var(--secondary); border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--dark); transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: var(--light); }
 
-        /* Przełącznik stylistki */
-        .stylist-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-tab { padding: 12px 24px; border-radius: 12px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 600; font-size: 15px; flex: 1; text-align: center; }
-        .btn-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .section-box { border: 1px solid var(--line); padding: 20px; border-radius: 12px; margin-bottom: 25px; background: #fff; }
+        .section-box h3 { font-size: 16px; margin-bottom: 15px; color: var(--primary-dark); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14px; }
-        th { background: var(--secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: #777; text-transform: uppercase; }
+        .input, select { padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; width: 100%; font-family: inherit; }
 
-        .grid-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin: 15px 0; }
-        .hour-checkbox { display: flex; align-items: center; gap: 8px; background: #f9f9f9; border: 1px solid var(--line); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-        
-        .login-box { max-width: 400px; margin: 80px auto; }
-        .input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; font-family: inherit; }
-        .block-section { background: #fafaf8; border: 1px dashed var(--line); padding: 16px; border-radius: 12px; margin-top: 15px; }
+        .hours-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
+        .hour-chip { padding: 8px; text-align: center; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; cursor: pointer; user-select: none; }
+        .hour-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+        .res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .res-table th, .res-table td { border-bottom: 1px solid var(--line); padding: 12px 8px; text-align: left; font-size: 13.5px; }
+        .res-table th { background: var(--secondary); font-size: 12px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-<div class="container">
+    <div class="admin-card">
+        <h1>Panel Zarządzania Salonem</h1>
 
-    <!-- FORMULARZ LOGOWANIA -->
-    <div id="loginView" class="card login-box">
-        <h2 style="margin-bottom: 20px; text-align: center;">Logowanie Admina</h2>
-        <input type="email" id="email" class="input" placeholder="E-mail">
-        <input type="password" id="password" class="input" placeholder="Hasło">
-        <button class="btn btn-primary" id="loginBtn" style="width: 100%;">Zaloguj się</button>
-        <p id="loginErr" style="color: red; font-size: 13px; margin-top: 10px; display: none;">Nieprawidłowy e-mail lub hasło.</p>
-    </div>
-
-    <!-- PANELE DLA ZALOGOWANEGO ADMINA -->
-    <div id="adminView" style="display: none;">
-        
-        <div class="header">
-            <h1>Zarządzanie wizytami</h1>
-            <button class="btn btn-secondary" id="logoutBtn">Wyloguj się</button>
-        </div>
-
-        <!-- PRZEŁĄCZNIK PROFILE AMELIA / JULIA -->
+        <!-- WYBÓR STYLISTKI -->
         <div class="stylist-selector">
-            <button class="btn-tab active" id="tabAmelia" onclick="switchStylist('Amelia')">Profil: Amelia</button>
-            <button class="btn-tab" id="tabJulia" onclick="switchStylist('Julia')">Profil: Julia</button>
+            <button class="tab-btn active" onclick="switchStylist('Amelia')">Amelia</button>
+            <button class="tab-btn" onclick="switchStylist('Julia')">Julia</button>
         </div>
 
-        <!-- USTAWIENIA GODZIN I DNI -->
-        <div class="card">
-            <h2>Dostępność — <span id="currentStylistName" style="color: var(--primary);">Amelia</span></h2>
-
-            <h3 style="font-size: 15px; margin-top: 18px;">1. Standardowe godziny pracy w tygodniu:</h3>
-            <div class="grid-hours" id="hoursContainer"></div>
-
-            <div class="block-section">
-                <h3 style="font-size: 15px;">2. Zablokuj CAŁY DZIEŃ (np. urlop):</h3>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <input type="date" id="blockDateInput" class="input" style="max-width: 220px; margin: 0;">
-                    <button class="btn btn-primary" id="addBlockedDateBtn">Zablokuj cały dzień</button>
+        <!-- DODAWANIE WIZYTY TELEFONICZNEJ / RĘCZNEJ -->
+        <div class="section-box" style="background: #fdfaf6; border-color: var(--primary);">
+            <h3>📞 Dodaj rezerwację (np. telefoniczną)</h3>
+            <form id="manualResForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Imię i Nazwisko klientki</label>
+                        <input type="text" id="mName" class="input" placeholder="np. Kasia Kowalska" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Numer telefonu</label>
+                        <input type="tel" id="mPhone" class="input" placeholder="np. 500 100 200" required>
+                    </div>
                 </div>
-                <ul id="blockedDatesList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
-            </div>
-
-            <div class="block-section">
-                <h3 style="font-size: 15px;">3. Zablokuj KONKRETNĄ GODZINĘ w danym dniu:</h3>
-                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                    <input type="date" id="blockSlotDate" class="input" style="max-width: 200px; margin: 0;">
-                    <select id="blockSlotHour" class="input" style="max-width: 150px; margin: 0;"></select>
-                    <button class="btn btn-primary" id="addBlockedSlotBtn">Zablokuj tę godzinę</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Usługa</label>
+                        <select id="mService" class="input" required>
+                            <option value="Manicure klasyczny (45 min)">Manicure klasyczny (45 min)</option>
+                            <option value="Stylizacja żelowa (75 min)">Stylizacja żelowa (75 min)</option>
+                            <option value="Pedicure hybrydowy (60 min)">Pedicure hybrydowy (60 min)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input type="date" id="mDate" class="input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Godzina</label>
+                        <select id="mTime" class="input" required>
+                            <!-- Wygenerowane dynamicznie -->
+                        </select>
+                    </div>
                 </div>
-                <ul id="blockedSlotsList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
-            </div>
-
-            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 25px; width: 100%; font-size: 16px;">Zapisz Ustawienia Dostępności dla: <span id="saveBtnStylist">Amelia</span></button>
+                <button type="submit" class="btn btn-success" id="addManualBtn">+ Zapisz wizytę</button>
+            </form>
         </div>
 
-        <!-- TABELA REZERWACJI -->
-        <div class="card">
-            <h2>Wszystkie Rezerwacje Klientów</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Stylistka</th>
-                        <th>Data</th>
-                        <th>Godzina</th>
-                        <th>Usługa</th>
-                        <th>Klient</th>
-                        <th>Telefon</th>
-                        <th>Akcja</th>
-                    </tr>
-                </thead>
-                <tbody id="reservationsTable"></tbody>
-            </table>
+        <!-- USTAWIENIA GODZIN PRACY -->
+        <div class="section-box">
+            <h3>⏰ Domyślne godziny pracy (<span class="current-stylist-name">Amelia</span>)</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Zaznacz godziny, w których stylistka przyjmuje klientki:</p>
+            <div class="hours-grid" id="hoursGrid"></div>
+            <br>
+            <button class="btn" onclick="saveWorkingHours()">Zapisz godziny pracy</button>
+        </div>
+
+        <!-- BLOKOWANIE CAŁEGO DNI LUB JEDNEJ GODZINY -->
+        <div class="section-box">
+            <h3>🚫 Blokowanie terminu / urlop (<span class="current-stylist-name">Amelia</span>)</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Wybierz datę</label>
+                    <input type="date" id="blockDate" class="input">
+                </div>
+                <div class="form-group">
+                    <label>Co zablokować?</label>
+                    <select id="blockType" class="input" onchange="toggleBlockHourSelect()">
+                        <option value="DAY">Cały dzień wolny / Urlop</option>
+                        <option value="HOUR">Pojedynczą godzinę</option>
+                    </select>
+                </div>
+                <div class="form-group" id="blockHourWrap" style="display:none;">
+                    <label>Godzina do zablokowania</label>
+                    <select id="blockHour" class="input"></select>
+                </div>
+            </div>
+            <button class="btn" style="background: #e67e22;" onclick="saveBlockade()">Zablokuj termin</button>
+        </div>
+
+        <!-- LISTA NADCHODZĄCYCH REZERWACJI -->
+        <div class="section-box">
+            <h3>📅 Zaplanowane wizyty (<span class="current-stylist-name">Amelia</span>)</h3>
+            <div style="overflow-x:auto;">
+                <table class="res-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Godz.</th>
+                            <th>Usługa</th>
+                            <th>Klientka</th>
+                            <th>Telefon</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationsList">
+                        <!-- Wypełniane z Firebase -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
-
-</div>
 
 <script>
     var firebaseConfig = {
@@ -142,166 +169,186 @@
 
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
-    var auth = firebase.auth();
 
     var currentStylist = 'Amelia';
     var ALL_POSSIBLE_HOURS = ['8:00', '9:00', '10:30', '12:00', '13:30', '14:00', '15:30', '17:00', '18:30'];
-    var currentSettings = { 
-        hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], 
-        blockedDates: [],
-        blockedSlots: {} 
-    };
+    var currentSchedule = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
 
-    document.getElementById('loginBtn').addEventListener('click', function(){
-        var e = document.getElementById('email').value;
-        var p = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(e, p).catch(function(){
-            document.getElementById('loginErr').style.display = 'block';
-        });
-    });
+    // Ustawienie dzisiejszej daty jako domyślnej w formularzu
+    document.getElementById('mDate').valueAsDate = new Date();
 
-    document.getElementById('logoutBtn').addEventListener('click', function(){ auth.signOut(); });
-
-    auth.onAuthStateChanged(function(user){
-        if(user){
-            document.getElementById('loginView').style.display = 'none';
-            document.getElementById('adminView').style.display = 'block';
-            populateHourSelect();
-            loadSettings();
-            loadReservations();
-        } else {
-            document.getElementById('loginView').style.display = 'block';
-            document.getElementById('adminView').style.display = 'none';
-        }
-    });
-
-    window.switchStylist = function(name){
+    function switchStylist(name) {
         currentStylist = name;
-        document.getElementById('tabAmelia').classList.toggle('active', name === 'Amelia');
-        document.getElementById('tabJulia').classList.toggle('active', name === 'Julia');
-        document.getElementById('currentStylistName').textContent = name;
-        document.getElementById('saveBtnStylist').textContent = name;
-        loadSettings();
-    };
-
-    function populateHourSelect(){
-        var sel = document.getElementById('blockSlotHour');
-        sel.innerHTML = '';
-        ALL_POSSIBLE_HOURS.forEach(function(h){ sel.innerHTML += `<option value="${h}">${h}</option>`; });
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.textContent === name));
+        document.querySelectorAll('.current-stylist-name').forEach(el => el.textContent = name);
+        loadStylistData();
     }
 
-    function loadSettings(){
-        db.collection('ustawienia').doc('harmonogram_' + currentStylist).get().then(function(doc){
-            currentSettings = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
-            if(doc.exists){
-                var data = doc.data();
-                if(data.hours) currentSettings.hours = data.hours;
-                if(data.blockedDates) currentSettings.blockedDates = data.blockedDates;
-                if(data.blockedSlots) currentSettings.blockedSlots = data.blockedSlots;
+    function loadStylistData() {
+        // Ładowanie grafiku
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).get().then(doc => {
+            if(doc.exists) {
+                currentSchedule = doc.data();
+            } else {
+                currentSchedule = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
             }
-            renderHoursEditor();
-            renderBlockedDates();
-            renderBlockedSlots();
+            renderHoursGrid();
+            populateHourSelects();
+        });
+
+        // Ładowanie wizyt
+        loadReservations();
+    }
+
+    function renderHoursGrid() {
+        var grid = document.getElementById('hoursGrid');
+        grid.innerHTML = '';
+        ALL_POSSIBLE_HOURS.forEach(h => {
+            var isSelected = (currentSchedule.hours || []).includes(h);
+            var chip = document.createElement('div');
+            chip.className = 'hour-chip' + (isSelected ? ' selected' : '');
+            chip.textContent = h;
+            chip.onclick = function() {
+                chip.classList.toggle('selected');
+            };
+            grid.appendChild(chip);
         });
     }
 
-    function renderHoursEditor(){
-        var container = document.getElementById('hoursContainer');
-        container.innerHTML = '';
-        ALL_POSSIBLE_HOURS.forEach(function(h){
-            var isChecked = currentSettings.hours.includes(h) ? 'checked' : '';
-            container.innerHTML += `<label class="hour-checkbox"><input type="checkbox" value="${h}" ${isChecked} class="hour-cb"> ${h}</label>`;
+    function populateHourSelects() {
+        var mTime = document.getElementById('mTime');
+        var blockHour = document.getElementById('blockHour');
+        mTime.innerHTML = '';
+        blockHour.innerHTML = '';
+
+        ALL_POSSIBLE_HOURS.forEach(h => {
+            mTime.innerHTML += `<option value="${h}">${h}</option>`;
+            blockHour.innerHTML += `<option value="${h}">${h}</option>`;
         });
     }
 
-    function renderBlockedDates(){
-        var list = document.getElementById('blockedDatesList');
-        list.innerHTML = '';
-        (currentSettings.blockedDates || []).forEach(function(d, index){
-            list.innerHTML += `<li style="margin-bottom: 4px;"><b>${d}</b> <a href="#" onclick="removeBlockedDate(${index})" style="color:red; margin-left:10px;">[Usuń]</a></li>`;
-        });
-    }
-
-    function renderBlockedSlots(){
-        var list = document.getElementById('blockedSlotsList');
-        list.innerHTML = '';
-        var slotsObj = currentSettings.blockedSlots || {};
-        Object.keys(slotsObj).forEach(function(dateKey){
-            slotsObj[dateKey].forEach(function(hour, hIndex){
-                list.innerHTML += `<li style="margin-bottom: 4px;"><b>${dateKey}</b> godz. <b>${hour}</b> <a href="#" onclick="removeBlockedSlot('${dateKey}', ${hIndex})" style="color:red; margin-left:10px;">[Usuń]</a></li>`;
-            });
-        });
-    }
-
-    document.getElementById('addBlockedDateBtn').addEventListener('click', function(){
-        var dateVal = document.getElementById('blockDateInput').value;
-        if(dateVal && !currentSettings.blockedDates.includes(dateVal)){
-            currentSettings.blockedDates.push(dateVal);
-            renderBlockedDates();
-        }
-    });
-
-    window.removeBlockedDate = function(index){
-        currentSettings.blockedDates.splice(index, 1);
-        renderBlockedDates();
-    };
-
-    document.getElementById('addBlockedSlotBtn').addEventListener('click', function(){
-        var dateVal = document.getElementById('blockSlotDate').value;
-        var hourVal = document.getElementById('blockSlotHour').value;
-        if(!dateVal || !hourVal) return;
-        if(!currentSettings.blockedSlots) currentSettings.blockedSlots = {};
-        if(!currentSettings.blockedSlots[dateVal]) currentSettings.blockedSlots[dateVal] = [];
-        if(!currentSettings.blockedSlots[dateVal].includes(hourVal)){
-            currentSettings.blockedSlots[dateVal].push(hourVal);
-            renderBlockedSlots();
-        }
-    });
-
-    window.removeBlockedSlot = function(dateKey, hIndex){
-        currentSettings.blockedSlots[dateKey].splice(hIndex, 1);
-        if(currentSettings.blockedSlots[dateKey].length === 0) delete currentSettings.blockedSlots[dateKey];
-        renderBlockedSlots();
-    };
-
-    document.getElementById('saveSettingsBtn').addEventListener('click', function(){
+    function saveWorkingHours() {
         var selectedHours = [];
-        document.querySelectorAll('.hour-cb:checked').forEach(cb => selectedHours.push(cb.value));
-        currentSettings.hours = selectedHours;
-
-        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSettings).then(function(){
-            alert('Zapisano ustawienia dla: ' + currentStylist);
-        }).catch(function(err){ alert('Błąd zapisu: ' + err.message); });
-    });
-
-    function loadReservations(){
-        db.collection('rezerwacje').orderBy('date', 'asc').onSnapshot(function(snapshot){
-            var tbody = document.getElementById('reservationsTable');
-            tbody.innerHTML = '';
-            snapshot.forEach(function(doc){
-                var data = doc.data();
-                var stylistName = data.stylist || 'Nieprzypisano';
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b style="color:var(--primary);">${stylistName}</b></td>
-                        <td><b>${data.date}</b></td>
-                        <td>${data.time}</td>
-                        <td>${data.service}</td>
-                        <td>${data.name}</td>
-                        <td><a href="tel:${data.phone}">${data.phone}</a></td>
-                        <td><button class="btn btn-danger" onclick="deleteRes('${doc.id}')">Anuluj</button></td>
-                    </tr>
-                `;
-            });
+        document.querySelectorAll('#hoursGrid .hour-chip.selected').forEach(chip => {
+            selectedHours.push(chip.textContent);
         });
+
+        currentSchedule.hours = selectedHours;
+
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSchedule, { merge: true })
+        .then(() => alert('Zapisano godziny pracy dla: ' + currentStylist))
+        .catch(err => alert('Błąd: ' + err.message));
     }
 
-    window.deleteRes = function(id){
-        if(confirm('Czy na pewno chcesz usunąć tę rezerwację?')){
-            db.collection('rezerwacje').doc(id).delete();
-        }
-    };
-</script>
+    function toggleBlockHourSelect() {
+        var type = document.getElementById('blockType').value;
+        document.getElementById('blockHourWrap').style.display = (type === 'HOUR') ? 'block' : 'none';
+    }
 
+    function saveBlockade() {
+        var date = document.getElementById('blockDate').value;
+        var type = document.getElementById('blockType').value;
+
+        if(!date) { alert('Wybierz datę!'); return; }
+
+        if (type === 'DAY') {
+            if(!currentSchedule.blockedDates) currentSchedule.blockedDates = [];
+            if(!currentSchedule.blockedDates.includes(date)) currentSchedule.blockedDates.push(date);
+        } else {
+            var hour = document.getElementById('blockHour').value;
+            if(!currentSchedule.blockedSlots) currentSchedule.blockedSlots = {};
+            if(!currentSchedule.blockedSlots[date]) currentSchedule.blockedSlots[date] = [];
+            if(!currentSchedule.blockedSlots[date].includes(hour)) currentSchedule.blockedSlots[date].push(hour);
+        }
+
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSchedule, { merge: true })
+        .then(() => alert('Zablokowano termin!'))
+        .catch(err => alert('Błąd: ' + err.message));
+    }
+
+    // DODAWANIE WIZYTY TELEFONICZNEJ / RĘCZNEJ
+    document.getElementById('manualResForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var name = document.getElementById('mName').value.trim();
+        var phone = document.getElementById('mPhone').value.trim();
+        var service = document.getElementById('mService').value;
+        var date = document.getElementById('mDate').value;
+        var time = document.getElementById('mTime').value;
+
+        var btn = document.getElementById('addManualBtn');
+        btn.disabled = true;
+
+        db.collection('rezerwacje').add({
+            stylist: currentStylist,
+            service: service,
+            date: date,
+            time: time,
+            name: name,
+            phone: phone,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert('Wizyta dodana pomyślnie!');
+            document.getElementById('mName').value = '';
+            document.getElementById('mPhone').value = '';
+            btn.disabled = false;
+            loadReservations();
+        }).catch(err => {
+            alert('Błąd dodawania: ' + err.message);
+            btn.disabled = false;
+        });
+    });
+
+    function loadReservations() {
+        var tbody = document.getElementById('reservationsList');
+        tbody.innerHTML = '<tr><td colspan="6">Ładowanie rezerwacji...</td></tr>';
+
+        db.collection('rezerwacje')
+          .where('stylist', '==', currentStylist)
+          .get()
+          .then(snapshot => {
+              tbody.innerHTML = '';
+              var resArray = [];
+              snapshot.forEach(doc => {
+                  var data = doc.data();
+                  data.id = doc.id;
+                  resArray.push(data);
+              });
+
+              // Sortowanie od najbliższych dat
+              resArray.sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+              if(resArray.length === 0) {
+                  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">Brak wizyt dla tej stylistki.</td></tr>';
+                  return;
+              }
+
+              resArray.forEach(res => {
+                  var tr = document.createElement('tr');
+                  tr.innerHTML = `
+                      <td><b>${res.date}</b></td>
+                      <td>${res.time}</td>
+                      <td>${res.service}</td>
+                      <td>${res.name}</td>
+                      <td><a href="tel:${res.phone}">${res.phone}</a></td>
+                      <td><button class="btn btn-danger" onclick="cancelReservation('${res.id}')">Odwołaj</button></td>
+                  `;
+                  tbody.appendChild(tr);
+              });
+          });
+    }
+
+    function cancelReservation(docId) {
+        if(confirm('Czy na pewno chcesz odwołać tę rezerwację?')) {
+            db.collection('rezerwacje').doc(docId).delete().then(() => {
+                alert('Wizyta została odwołana.');
+                loadReservations();
+            });
+        }
+    }
+
+    // Pierwsze załadowanie danych dla Amelii
+    loadStylistData();
+</script>
 </body>
 </html>
