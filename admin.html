@@ -43,6 +43,7 @@
         
         .login-box { max-width: 400px; margin: 80px auto; }
         .input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; font-family: inherit; }
+        .block-section { background: #fafaf8; border: 1px dashed var(--line); padding: 16px; border-radius: 12px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -69,19 +70,33 @@
         <!-- USTAWIENIA GODZIN I DNI -->
         <div class="card">
             <h2>Zarządzanie Dostępnością Salonu</h2>
-            <p style="font-size: 13.5px; color: #666; margin-top: 4px;">Wybierz godziny, w których pracujesz oraz zablokuj wybrane dni (urlopy).</p>
-            
-            <h3 style="font-size: 15px; margin-top: 18px;">Aktywne godziny w ciągu dnia:</h3>
+
+            <!-- 1. Domyślne godziny -->
+            <h3 style="font-size: 15px; margin-top: 18px;">1. Standardowe godziny pracy w tygodniu:</h3>
             <div class="grid-hours" id="hoursContainer"></div>
 
-            <h3 style="font-size: 15px; margin-top: 20px;">Zablokuj konkretną datę (np. urlop, święto):</h3>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="date" id="blockDateInput" class="input" style="max-width: 220px; margin: 0;">
-                <button class="btn btn-primary" id="addBlockedDateBtn">Zablokuj dzień</button>
+            <!-- 2. Blokada całych dni -->
+            <div class="block-section">
+                <h3 style="font-size: 15px;">2. Zablokuj CAŁY DZIEŃ (np. urlop, święto):</h3>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="date" id="blockDateInput" class="input" style="max-width: 220px; margin: 0;">
+                    <button class="btn btn-primary" id="addBlockedDateBtn">Zablokuj cały dzień</button>
+                </div>
+                <ul id="blockedDatesList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
             </div>
-            <ul id="blockedDatesList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
 
-            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 22px;">Zapisz Ustawienia Dostępności</button>
+            <!-- 3. Blokada pojedynczych godzin -->
+            <div class="block-section">
+                <h3 style="font-size: 15px;">3. Zablokuj KONKRETNĄ GODZINĘ w danym dniu:</h3>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <input type="date" id="blockSlotDate" class="input" style="max-width: 200px; margin: 0;">
+                    <select id="blockSlotHour" class="input" style="max-width: 150px; margin: 0;"></select>
+                    <button class="btn btn-primary" id="addBlockedSlotBtn">Zablokuj tę godzinę</button>
+                </div>
+                <ul id="blockedSlotsList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
+            </div>
+
+            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 25px; width: 100%; font-size: 16px;">Zapisz Wszystkie Ustawienia Dostępności</button>
         </div>
 
         <!-- TABELA REZERWACJI -->
@@ -121,7 +136,11 @@
     var auth = firebase.auth();
 
     var ALL_POSSIBLE_HOURS = ['8:00', '9:00', '10:30', '12:00', '13:30', '14:00', '15:30', '17:00', '18:30'];
-    var currentSettings = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [] };
+    var currentSettings = { 
+        hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], 
+        blockedDates: [],
+        blockedSlots: {} // format: {"2026-08-15": ["12:00", "14:00"]}
+    };
 
     document.getElementById('loginBtn').addEventListener('click', function(){
         var e = document.getElementById('email').value;
@@ -137,6 +156,7 @@
         if(user){
             document.getElementById('loginView').style.display = 'none';
             document.getElementById('adminView').style.display = 'block';
+            populateHourSelect();
             loadSettings();
             loadReservations();
         } else {
@@ -145,15 +165,25 @@
         }
     });
 
+    function populateHourSelect(){
+        var sel = document.getElementById('blockSlotHour');
+        sel.innerHTML = '';
+        ALL_POSSIBLE_HOURS.forEach(function(h){
+            sel.innerHTML += `<option value="${h}">${h}</option>`;
+        });
+    }
+
     function loadSettings(){
         db.collection('ustawienia').doc('harmonogram').get().then(function(doc){
             if(doc.exists){
                 var data = doc.data();
                 if(data.hours) currentSettings.hours = data.hours;
                 if(data.blockedDates) currentSettings.blockedDates = data.blockedDates;
+                if(data.blockedSlots) currentSettings.blockedSlots = data.blockedSlots;
             }
             renderHoursEditor();
             renderBlockedDates();
+            renderBlockedSlots();
         });
     }
 
@@ -178,6 +208,19 @@
         });
     }
 
+    function renderBlockedSlots(){
+        var list = document.getElementById('blockedSlotsList');
+        list.innerHTML = '';
+        var slotsObj = currentSettings.blockedSlots || {};
+        
+        Object.keys(slotsObj).forEach(function(dateKey){
+            slotsObj[dateKey].forEach(function(hour, hIndex){
+                list.innerHTML += `<li style="margin-bottom: 4px;"><b>${dateKey}</b> o godz. <b>${hour}</b> <a href="#" onclick="removeBlockedSlot('${dateKey}', ${hIndex})" style="color:red; margin-left:10px;">[Usuń blokadę]</a></li>`;
+            });
+        });
+    }
+
+    // Dodawanie całych dni
     document.getElementById('addBlockedDateBtn').addEventListener('click', function(){
         var dateVal = document.getElementById('blockDateInput').value;
         if(dateVal && !currentSettings.blockedDates.includes(dateVal)){
@@ -191,13 +234,38 @@
         renderBlockedDates();
     };
 
+    // Dodawanie konkretnych godzin w dniu
+    document.getElementById('addBlockedSlotBtn').addEventListener('click', function(){
+        var dateVal = document.getElementById('blockSlotDate').value;
+        var hourVal = document.getElementById('blockSlotHour').value;
+        
+        if(!dateVal || !hourVal) return;
+
+        if(!currentSettings.blockedSlots) currentSettings.blockedSlots = {};
+        if(!currentSettings.blockedSlots[dateVal]) currentSettings.blockedSlots[dateVal] = [];
+
+        if(!currentSettings.blockedSlots[dateVal].includes(hourVal)){
+            currentSettings.blockedSlots[dateVal].push(hourVal);
+            renderBlockedSlots();
+        }
+    });
+
+    window.removeBlockedSlot = function(dateKey, hIndex){
+        currentSettings.blockedSlots[dateKey].splice(hIndex, 1);
+        if(currentSettings.blockedSlots[dateKey].length === 0){
+            delete currentSettings.blockedSlots[dateKey];
+        }
+        renderBlockedSlots();
+    };
+
+    // Zapisywanie wszystkiego do bazy
     document.getElementById('saveSettingsBtn').addEventListener('click', function(){
         var selectedHours = [];
         document.querySelectorAll('.hour-cb:checked').forEach(cb => selectedHours.push(cb.value));
         currentSettings.hours = selectedHours;
 
         db.collection('ustawienia').doc('harmonogram').set(currentSettings).then(function(){
-            alert('Zapisano nowe godziny i blokady dni w bazie!');
+            alert('Wszystkie ustawienia i blokady zostały pomyślnie zapisane!');
         }).catch(function(err){
             alert('Błąd zapisu: ' + err.message);
         });
