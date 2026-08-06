@@ -7,7 +7,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -51,214 +50,81 @@
             align-items: center;
             box-shadow: 0 2px 15px rgba(0,0,0,0.05);
             z-index: 1000;
-            transition: all 0.3s ease;
         }
-        nav.scrolled { height: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .logo { font-size: 1.8rem; font-weight: 600; color: var(--primary); }
         .nav-links { display: flex; list-style: none; gap: 2rem; align-items: center; }
-        .nav-links a { font-weight: 400; font-size: 0.95rem; transition: color 0.3s ease; }
-        .nav-links a:hover { color: var(--primary); }
+        .nav-links a { font-weight: 400; font-size: 0.95rem; }
         .nav-links a.active { color: var(--primary-dark); font-weight: 600; }
         .nav-links .btn-book {
-            background: var(--primary);
-            color: var(--light);
-            padding: 0.6rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: background 0.3s ease;
-        }
-        .nav-links .btn-book:hover { background: var(--primary-dark); color: var(--light); }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            z-index: 1001;
-        }
-        .hamburger span {
-            width: 26px;
-            height: 2px;
-            background: var(--dark);
-            transition: all 0.3s ease;
-        }
-
-        @media (max-width: 480px) {
-            .hamburger { display: flex; }
-            .nav-links {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                width: 100%;
-                flex-direction: column;
-                align-items: flex-start;
-                background: var(--light);
-                padding: 1.5rem 5%;
-                gap: 1.2rem;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-                transform: translateY(-150%);
-                opacity: 0;
-                transition: all 0.3s ease;
-                pointer-events: none;
-            }
-            .nav-links.open {
-                transform: translateY(0);
-                opacity: 1;
-                pointer-events: auto;
-            }
+            background: var(--primary); color: var(--light);
+            padding: 0.6rem 1.5rem; border-radius: 25px; font-weight: 600; border: none; cursor: pointer;
         }
 
         .page-header {
-            position: relative;
-            padding: 4.5rem 5% 3rem;
-            text-align: center;
+            padding: 4.5rem 5% 3rem; text-align: center;
             background: linear-gradient(160deg, #f7ede0 0%, #fbf5ec 45%, var(--light) 100%);
-            overflow: hidden;
         }
-        .page-header p.eyebrow {
-            font-size: 0.85rem;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: var(--primary-dark);
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-        }
+        .page-header p.eyebrow { font-size: 0.85rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--primary-dark); font-weight: 600; margin-bottom: 0.7rem; }
         .page-header h1 { font-size: 2.4rem; color: var(--dark); margin-bottom: 0.6rem; }
-        .page-header p.lead { max-width: 520px; margin: 0 auto; color: #666; font-size: 1rem; }
 
-        .booking-wrap {
-            max-width: 640px;
-            margin: 0 auto;
-            padding: 2.5rem 5% 6rem;
-        }
-        .booking-card {
-            background: var(--light);
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            padding: 2.5rem 2.2rem;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.07);
-        }
+        .booking-wrap { max-width: 640px; margin: 0 auto; padding: 2.5rem 5% 6rem; }
+        .booking-card { background: var(--light); border: 1px solid var(--line); border-radius: 22px; padding: 2.5rem 2.2rem; box-shadow: 0 25px 60px rgba(0,0,0,0.07); }
 
         .progress { display: flex; gap: 6px; margin-bottom: 2rem; }
-        .progress span { height: 4px; flex: 1; background: var(--secondary); border-radius: 2px; overflow: hidden; position: relative; }
+        .progress span { height: 4px; flex: 1; background: var(--secondary); border-radius: 2px; position: relative; }
         .progress span::after { content:''; display:block; height:100%; width:0%; background: var(--primary); transition: width .35s ease; }
         .progress span.done::after, .progress span.current::after { width: 100%; }
 
-        .field-label {
-            font-size: 12px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase;
-            color: #8a8a8a; margin: 0 0 10px; display: block;
-        }
-
+        .field-label { font-size: 12px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: #8a8a8a; margin: 0 0 10px; display: block; }
         .step { display: none; }
-        .step.active { display: block; animation: fadeIn .3s ease; }
-        @keyframes fadeIn { from{opacity:0; transform:translateX(6px);} to{opacity:1; transform:translateX(0);} }
+        .step.active { display: block; }
 
         .service-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-        .service {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px;
-            cursor: pointer; background: #fff; transition: border-color .2s, background .2s;
-        }
-        .service:hover { border-color: var(--primary); }
+        .service { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; background: #fff; }
         .service.picked { border-color: var(--primary); background: var(--secondary); }
         .service input { display: none; }
-        .service .service-name { font-size: 15px; font-weight: 500; }
-        .service .service-meta { font-size: 13px; color: #9a9a9a; }
 
-        .input {
-            width: 100%; font-size: 15px; padding: 13px 16px;
-            border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--text);
-            transition: border-color .2s; font-family: 'Montserrat', sans-serif;
-        }
-        .input:focus { outline: none; border-color: var(--primary); }
+        .input { width: 100%; font-size: 15px; padding: 13px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; margin-bottom: 12px; }
 
         .calendar { border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 20px; }
         .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-        .cal-month { font-family: 'Playfair Display', serif; font-size: 17px; text-transform: capitalize; }
-        .cal-nav {
-            background: none; border: 1px solid var(--line); width: 32px; height: 32px; border-radius: 50%;
-            cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center;
-            color: var(--dark);
-        }
-        .cal-nav:hover { background: var(--secondary); }
-        .cal-nav:disabled { opacity: .3; cursor: not-allowed; }
-        .cal-weekdays {
-            display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
-            font-size: 11.5px; color: #9a9a9a; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px;
-        }
+        .cal-month { font-family: 'Playfair Display', serif; font-size: 17px; }
+        .cal-nav { background: none; border: 1px solid var(--line); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+        .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11.5px; color: #9a9a9a; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .cal-day {
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; font-size: 14px; cursor: pointer; border: 1px solid transparent;
-            transition: background .2s, border-color .2s, color .2s;
-        }
-        .cal-day.empty { visibility: hidden; cursor: default; }
+        .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 14px; cursor: pointer; }
+        .cal-day.empty { visibility: hidden; }
         .cal-day.past { color: #d5d5d5; cursor: not-allowed; }
-        .cal-day:not(.past):not(.empty):hover { border-color: var(--primary); }
-        .cal-day.today:not(.picked) { font-weight: 600; color: var(--primary-dark); }
         .cal-day.picked { background: var(--primary); color: var(--light); }
 
         .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
-        .slot {
-            padding: 12px 6px; text-align: center; font-size: 14px;
-            border: 1px solid var(--line); border-radius: 10px; background: #fff; cursor: pointer;
-            transition: border-color .2s, background .2s;
-        }
-        .slot:hover { border-color: var(--primary); }
-        .slot.picked { background: var(--primary); color: var(--light); border-color: var(--primary); }
+        .slot { padding: 12px 6px; text-align: center; font-size: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; cursor: pointer; }
+        .slot.picked { background: var(--primary); color: var(--light); }
         .slot.taken { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
-        .hint { font-size: 13.5px; color: #9a9a9a; margin: 10px 0 0; }
 
         .actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-primary, .btn-secondary {
-            font-size: 15px; padding: 14px 22px; border-radius: 999px; border: none; cursor: pointer;
-            flex: 1; transition: background .2s, transform .15s;
-        }
+        .btn-primary, .btn-secondary { font-size: 15px; padding: 14px 22px; border-radius: 999px; border: none; cursor: pointer; flex: 1; }
         .btn-primary { background: var(--primary); color: var(--light); }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-primary:disabled { background: #ddd; cursor: not-allowed; }
         .btn-secondary { background: none; color: var(--dark); border: 1px solid var(--line); flex: 0 0 auto; }
-        .btn-secondary:hover { background: var(--secondary); }
 
-        .summary { background: var(--secondary); border-radius: 14px; padding: 18px 20px; font-size: 14.5px; line-height: 1.8; margin-bottom: 22px; }
-        .summary b { color: var(--primary-dark); }
-
-        .confirm-icon {
-            width: 58px; height: 58px; border-radius: 50%; background: var(--accent-green); color: var(--light);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
-        }
-        .confirm-icon svg { width: 26px; height: 26px; }
-        .confirm-title { font-size: 24px; text-align: center; margin: 0 0 10px; }
-        .confirm-text { text-align: center; font-size: 15px; color: #7a7a7a; margin: 0 0 26px; line-height: 1.6; }
-
-        .error { color: #b3653f; font-size: 13px; margin: -12px 0 16px; display: none; }
+        .summary { background: var(--secondary); border-radius: 14px; padding: 18px 20px; font-size: 14.5px; margin-bottom: 22px; }
+        .error { color: #b3653f; font-size: 13px; display: none; }
         .error.show { display: block; }
     </style>
 </head>
 <body>
 
-    <nav id="navbar">
+    <nav>
         <a href="index.html" class="logo">SENS.</a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="index.html#hero">Start</a></li>
-            <li><a href="onas.html">O nas</a></li>
+        <ul class="nav-links">
+            <li><a href="index.html">Start</a></li>
             <li><a href="rezerwacje.html" class="btn-book active">Umów wizytę</a></li>
         </ul>
-        <button class="hamburger" id="hamburger">
-            <span></span><span></span><span></span>
-        </button>
     </nav>
 
     <header class="page-header">
         <p class="eyebrow">Rezerwacja</p>
         <h1>Umów swoją wizytę</h1>
-        <p class="lead">Wybierz usługę, dogodny termin i zostaw kontakt — resztą zajmiemy się my.</p>
     </header>
 
     <div class="booking-wrap">
@@ -274,31 +140,12 @@
             <div class="step active" data-step="1">
                 <span class="field-label">Wybierz usługę</span>
                 <div class="service-list">
-                    <label class="service">
-                        <input type="radio" name="service" value="Manicure klasyczny (45 min)">
-                        <span class="service-name">Manicure klasyczny</span>
-                        <span class="service-meta">45 min</span>
-                    </label>
-                    <label class="service">
-                        <input type="radio" name="service" value="Stylizacja żelowa (75 min)">
-                        <span class="service-name">Stylizacja żelowa</span>
-                        <span class="service-meta">75 min</span>
-                    </label>
-                    <label class="service">
-                        <input type="radio" name="service" value="Pedicure hybrydowy (60 min)">
-                        <span class="service-name">Pedicure hybrydowy</span>
-                        <span class="service-meta">60 min</span>
-                    </label>
-                    <label class="service">
-                        <input type="radio" name="service" value="Przedłużanie paznokci (120 min)">
-                        <span class="service-name">Przedłużanie paznokci</span>
-                        <span class="service-meta">120 min</span>
-                    </label>
+                    <label class="service"><input type="radio" name="service" value="Manicure klasyczny (45 min)"><span class="service-name">Manicure klasyczny</span><span class="service-meta">45 min</span></label>
+                    <label class="service"><input type="radio" name="service" value="Stylizacja żelowa (75 min)"><span class="service-name">Stylizacja żelowa</span><span class="service-meta">75 min</span></label>
+                    <label class="service"><input type="radio" name="service" value="Pedicure hybrydowy (60 min)"><span class="service-name">Pedicure hybrydowy</span><span class="service-meta">60 min</span></label>
                 </div>
-                <p class="error" id="errService">Wybierz usługę, aby przejść dalej.</p>
-                <div class="actions">
-                    <button type="button" class="btn-primary" id="next1">Dalej</button>
-                </div>
+                <p class="error" id="errService">Wybierz usługę.</p>
+                <div class="actions"><button type="button" class="btn-primary" id="next1">Dalej</button></div>
             </div>
 
             <!-- STEP 2 -->
@@ -310,17 +157,14 @@
                         <span class="cal-month" id="calMonthLabel"></span>
                         <button type="button" class="cal-nav" id="calNext">&rsaquo;</button>
                     </div>
-                    <div class="cal-weekdays">
-                        <span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span>
-                    </div>
+                    <div class="cal-weekdays"><span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span></div>
                     <div class="cal-grid" id="calGrid"></div>
                 </div>
 
                 <div id="slotsWrap" style="display:none;">
                     <span class="field-label">Dostępne godziny — <span id="slotsDateLabel"></span></span>
                     <div class="slots" id="slots"></div>
-                    <p class="hint" id="slotsLoading" style="display:none;">Sprawdzam dostępność…</p>
-                    <p class="hint" id="slotsNone" style="display:none; color: #c1633e;">Brak wolnych terminów tego dnia.</p>
+                    <p id="slotsNone" style="display:none; color: #c1633e; font-size:14px;">Brak wolnych terminów tego dnia.</p>
                 </div>
 
                 <p class="error" id="errSlot">Wybierz dzień i godzinę.</p>
@@ -333,11 +177,11 @@
             <!-- STEP 3 -->
             <div class="step" data-step="3">
                 <span class="field-label">Imię i nazwisko</span>
-                <input type="text" class="input" id="clientName" placeholder="np. Anna Kowalska" style="margin-bottom:18px;">
+                <input type="text" class="input" id="clientName" placeholder="np. Anna Kowalska">
 
                 <span class="field-label">Telefon</span>
-                <input type="tel" class="input" id="clientPhone" placeholder="np. 600 123 456" style="margin-bottom:8px;">
-                <p class="error" id="errContact">Podaj imię i poprawny numer telefonu.</p>
+                <input type="tel" class="input" id="clientPhone" placeholder="np. 600 123 456">
+                <p class="error" id="errContact">Podaj imię i numer telefonu.</p>
 
                 <div class="summary" id="summary"></div>
 
@@ -349,14 +193,9 @@
 
             <!-- STEP 4 -->
             <div class="step" data-step="4">
-                <div class="confirm-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                </div>
-                <h3 class="confirm-title">Wizyta zgłoszona!</h3>
-                <p class="confirm-text" id="confirmText"></p>
-                <div class="actions">
-                    <a href="index.html" class="btn-primary" style="text-align:center; display:block;">Wróć na stronę główną</a>
-                </div>
+                <h3 style="text-align:center; font-size:22px; margin-bottom:10px;">Wizyta zarezerwowana!</h3>
+                <p id="confirmText" style="text-align:center; font-size:15px; color:#666;"></p>
+                <div class="actions" style="margin-top:20px;"><a href="index.html" class="btn-primary" style="text-align:center;">Wróć na stronę główną</a></div>
             </div>
 
         </div>
@@ -366,12 +205,10 @@
     var firebaseConfig = {
       apiKey: "AIzaSyDJFf5eogJDJ2v71OpCvsuS33L95bMD2zw",
       authDomain: "pazyyyy.firebaseapp.com",
-      databaseURL: "https://pazyyyy-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "pazyyyy",
       storageBucket: "pazyyyy.firebasestorage.app",
       messagingSenderId: "135537952133",
-      appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
-      measurementId: "G-YFWQ8J89SZ"
+      appId: "1:135537952133:web:09f8b29f462aaaf634b0ec"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -384,17 +221,15 @@
     var calViewMonth = todayMidnight.getMonth();
 
     function goToStep(n){
-        document.querySelectorAll('.step').forEach(function(el){
-            el.classList.toggle('active', el.dataset.step === String(n));
-        });
-        document.querySelectorAll('#progress span').forEach(function(el){
+        document.querySelectorAll('.step').forEach(el => el.classList.toggle('active', el.dataset.step === String(n)));
+        document.querySelectorAll('#progress span').forEach(el => {
             var s = parseInt(el.dataset.step, 10);
             el.classList.toggle('done', s < n);
             el.classList.toggle('current', s === n);
         });
     }
 
-    document.querySelectorAll('input[name="service"]').forEach(function(input){
+    document.querySelectorAll('input[name="service"]').forEach(input => {
         input.addEventListener('change', function(){
             document.querySelectorAll('.service').forEach(l => l.classList.remove('picked'));
             input.closest('.service').classList.add('picked');
@@ -432,7 +267,6 @@
             cell.className = 'cal-day';
             cell.textContent = d;
 
-            if (cellDate.getTime() === todayMidnight.getTime()) cell.classList.add('today');
             if (cellDate.getTime() < todayMidnight.getTime()){
                 cell.classList.add('past');
             } else {
@@ -466,29 +300,37 @@
         db.collection('ustawienia').doc('harmonogram').get().then(function(docSettings){
             var activeHours = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
             var blockedDates = [];
+            var blockedSlots = {};
 
             if(docSettings.exists){
                 var sData = docSettings.data();
                 if(sData.hours && sData.hours.length > 0) activeHours = sData.hours;
                 if(sData.blockedDates) blockedDates = sData.blockedDates;
+                if(sData.blockedSlots) blockedSlots = sData.blockedSlots;
             }
 
+            // 1. Sprawdź blokadę CAŁEGO DNIA
             if(blockedDates.includes(key)){
-                noneEl.textContent = "Ten dzień jest wyłączony z rezerwacji (salon zamknięty).";
+                noneEl.textContent = "Ten dzień jest całkowicie wyłączony z rezerwacji (salon zamknięty).";
                 noneEl.style.display = 'block';
                 return;
             }
 
+            // Godziny zablokowane pojedynczo na ten dzień przez admina
+            var hoursBlockedByAdminThisDay = blockedSlots[key] || [];
+
+            // 2. Pobierz rezerwacje złożone przez klientów
             db.collection('rezerwacje').where('date', '==', key).get().then(function(snapshot){
-                var taken = [];
-                snapshot.forEach(doc => taken.push(doc.data().time));
+                var takenByClients = [];
+                snapshot.forEach(doc => takenByClients.push(doc.data().time));
 
                 activeHours.forEach(function(t){
                     var el = document.createElement('div');
                     el.className = 'slot';
                     el.textContent = t;
 
-                    if (taken.includes(t)){
+                    // Jeżeli godzina jest zajęta przez klienta LUB zablokowana przez admina
+                    if (takenByClients.includes(t) || hoursBlockedByAdminThisDay.includes(t)){
                         el.classList.add('taken');
                     } else {
                         el.addEventListener('click', function(){
@@ -532,7 +374,6 @@
 
         var submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Zapisywanie…';
 
         db.collection('rezerwacje').add({
             service: state.service,
@@ -544,13 +385,12 @@
         })
         .then(function(docRef) {
             document.getElementById('confirmText').innerHTML = 
-                'Dziękujemy, <b>' + nameVal + '</b>! Wizyta została zarezerwowana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
+                'Dziękujemy, <b>' + nameVal + '</b>! Wizyta zarezerwowana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
             goToStep(4);
         })
         .catch(function(error) {
             alert("Błąd zapisu: " + error.message);
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Potwierdź wizytę';
         });
     });
 </script>
