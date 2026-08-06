@@ -7,7 +7,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-    <!-- Ładowanie Firebase SDK (App + Firestore) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -320,7 +320,7 @@
                     <span class="field-label">Dostępne godziny — <span id="slotsDateLabel"></span></span>
                     <div class="slots" id="slots"></div>
                     <p class="hint" id="slotsLoading" style="display:none;">Sprawdzam dostępność…</p>
-                    <p class="hint" id="slotsNone" style="display:none;">Brak wolnych terminów tego dnia.</p>
+                    <p class="hint" id="slotsNone" style="display:none; color: #c1633e;">Brak wolnych terminów tego dnia.</p>
                 </div>
 
                 <p class="error" id="errSlot">Wybierz dzień i godzinę.</p>
@@ -363,7 +363,6 @@
     </div>
 
 <script>
-    // --- KONFIGURACJA FIREBASE ---
     var firebaseConfig = {
       apiKey: "AIzaSyDJFf5eogJDJ2v71OpCvsuS33L95bMD2zw",
       authDomain: "pazyyyy.firebaseapp.com",
@@ -378,9 +377,7 @@
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
-    var ALL_SLOTS = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
     var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-
     var state = { service:null, date:null, time:null, name:'', phone:'' };
     var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
     var calViewYear = todayMidnight.getFullYear();
@@ -397,7 +394,6 @@
         });
     }
 
-    // Wybór usługi
     document.querySelectorAll('input[name="service"]').forEach(function(input){
         input.addEventListener('change', function(){
             document.querySelectorAll('.service').forEach(l => l.classList.remove('picked'));
@@ -413,7 +409,6 @@
         goToStep(2);
     });
 
-    // Kalendarz
     function pad(n){ return n < 10 ? '0' + n : '' + n; }
     function dateKey(y, m, d){ return y + '-' + pad(m + 1) + '-' + pad(d); }
 
@@ -464,14 +459,31 @@
 
     function loadSlotsForDate(key){
         var slotsEl = document.getElementById('slots');
+        var noneEl = document.getElementById('slotsNone');
         slotsEl.innerHTML = '';
-        
-        db.collection('rezerwacje').where('date', '==', key).get()
-            .then(function(snapshot){
+        noneEl.style.display = 'none';
+
+        db.collection('ustawienia').doc('harmonogram').get().then(function(docSettings){
+            var activeHours = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
+            var blockedDates = [];
+
+            if(docSettings.exists){
+                var sData = docSettings.data();
+                if(sData.hours && sData.hours.length > 0) activeHours = sData.hours;
+                if(sData.blockedDates) blockedDates = sData.blockedDates;
+            }
+
+            if(blockedDates.includes(key)){
+                noneEl.textContent = "Ten dzień jest wyłączony z rezerwacji (salon zamknięty).";
+                noneEl.style.display = 'block';
+                return;
+            }
+
+            db.collection('rezerwacje').where('date', '==', key).get().then(function(snapshot){
                 var taken = [];
                 snapshot.forEach(doc => taken.push(doc.data().time));
 
-                ALL_SLOTS.forEach(function(t){
+                activeHours.forEach(function(t){
                     var el = document.createElement('div');
                     el.className = 'slot';
                     el.textContent = t;
@@ -488,8 +500,8 @@
                     }
                     slotsEl.appendChild(el);
                 });
-            })
-            .catch(err => console.error("Błąd slots:", err));
+            });
+        });
     }
 
     document.getElementById('back2').addEventListener('click', function(){ goToStep(1); });
@@ -509,7 +521,6 @@
             '<b>Termin:</b> ' + dateStr + ', godz. ' + state.time;
     }
 
-    // WYSYŁANIE REZERWACJI DO FIREBASE
     document.getElementById('submitBtn').addEventListener('click', function(){
         var nameVal = document.getElementById('clientName').value.trim();
         var phoneVal = document.getElementById('clientPhone').value.trim();
@@ -523,7 +534,6 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Zapisywanie…';
 
-        // Zapis rekordu do kolekcji 'rezerwacje'
         db.collection('rezerwacje').add({
             service: state.service,
             date: state.date,
@@ -533,14 +543,12 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(function(docRef) {
-            console.log("Sukces! Zapisano rezerwację z ID: ", docRef.id);
             document.getElementById('confirmText').innerHTML = 
-                'Dziękujemy, <b>' + nameVal + '</b>! Twoja wizyta została zapisana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
+                'Dziękujemy, <b>' + nameVal + '</b>! Wizyta została zarezerwowana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
             goToStep(4);
         })
         .catch(function(error) {
-            console.error("Błąd podczas zapisu do Firebase: ", error);
-            alert("Wystąpił błąd podczas zapisywania rezerwacji. Sprawdź konsolę przeglądarki (F12).");
+            alert("Błąd zapisu: " + error.message);
             submitBtn.disabled = false;
             submitBtn.textContent = 'Potwierdź wizytę';
         });
