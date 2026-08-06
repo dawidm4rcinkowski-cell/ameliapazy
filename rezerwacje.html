@@ -436,24 +436,23 @@
 
         (function(){
             // ============================================================
-            // KONFIGURACJA FIREBASE — podmień na dane swojego projektu.
-            // Firebase Console → Ustawienia projektu → Twoje aplikacje →
-            // (ikona </>) → "SDK setup and configuration".
+            // KONFIGURACJA FIREBASE — Wpięte docelowe dane
             // ============================================================
             var firebaseConfig = {
-                apiKey: "TWOJ_API_KEY",
-                authDomain: "TWOJ_PROJEKT.firebaseapp.com",
-                projectId: "TWOJ_PROJEKT",
-                storageBucket: "TWOJ_PROJEKT.appspot.com",
-                messagingSenderId: "TWOJ_SENDER_ID",
-                appId: "TWOJ_APP_ID"
+                apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
+                authDomain: "pazyyyy.firebaseapp.com",
+                projectId: "pazyyyy",
+                storageBucket: "pazyyyy.firebasestorage.app",
+                messagingSenderId: "135537952133",
+                appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
+                measurementId: "G-YFWQ8J89SZ"
             };
             var db = null;
             try {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
             } catch (e) {
-                console.warn('Firebase nie skonfigurowany — wstaw dane w firebaseConfig.', e);
+                console.warn('Błąd konfiguracji Firebase.', e);
             }
 
             var ALL_SLOTS = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
