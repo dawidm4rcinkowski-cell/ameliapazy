@@ -34,6 +34,11 @@
         .btn-danger { background: #e74c3c; color: #fff; }
         .btn-secondary { background: none; border: 1px solid var(--line); color: var(--dark); }
 
+        /* Przełącznik stylistki */
+        .stylist-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-tab { padding: 12px 24px; border-radius: 12px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 600; font-size: 15px; flex: 1; text-align: center; }
+        .btn-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14px; }
         th { background: var(--secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -67,17 +72,21 @@
             <button class="btn btn-secondary" id="logoutBtn">Wyloguj się</button>
         </div>
 
+        <!-- PRZEŁĄCZNIK PROFILE AMELIA / JULIA -->
+        <div class="stylist-selector">
+            <button class="btn-tab active" id="tabAmelia" onclick="switchStylist('Amelia')">Profil: Amelia</button>
+            <button class="btn-tab" id="tabJulia" onclick="switchStylist('Julia')">Profil: Julia</button>
+        </div>
+
         <!-- USTAWIENIA GODZIN I DNI -->
         <div class="card">
-            <h2>Zarządzanie Dostępnością Salonu</h2>
+            <h2>Dostępność — <span id="currentStylistName" style="color: var(--primary);">Amelia</span></h2>
 
-            <!-- 1. Domyślne godziny -->
             <h3 style="font-size: 15px; margin-top: 18px;">1. Standardowe godziny pracy w tygodniu:</h3>
             <div class="grid-hours" id="hoursContainer"></div>
 
-            <!-- 2. Blokada całych dni -->
             <div class="block-section">
-                <h3 style="font-size: 15px;">2. Zablokuj CAŁY DZIEŃ (np. urlop, święto):</h3>
+                <h3 style="font-size: 15px;">2. Zablokuj CAŁY DZIEŃ (np. urlop):</h3>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <input type="date" id="blockDateInput" class="input" style="max-width: 220px; margin: 0;">
                     <button class="btn btn-primary" id="addBlockedDateBtn">Zablokuj cały dzień</button>
@@ -85,7 +94,6 @@
                 <ul id="blockedDatesList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
             </div>
 
-            <!-- 3. Blokada pojedynczych godzin -->
             <div class="block-section">
                 <h3 style="font-size: 15px;">3. Zablokuj KONKRETNĄ GODZINĘ w danym dniu:</h3>
                 <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
@@ -96,15 +104,16 @@
                 <ul id="blockedSlotsList" style="margin-top: 12px; font-size: 14px; padding-left: 20px;"></ul>
             </div>
 
-            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 25px; width: 100%; font-size: 16px;">Zapisz Wszystkie Ustawienia Dostępności</button>
+            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 25px; width: 100%; font-size: 16px;">Zapisz Ustawienia Dostępności dla: <span id="saveBtnStylist">Amelia</span></button>
         </div>
 
         <!-- TABELA REZERWACJI -->
         <div class="card">
-            <h2>Lista Rezerwacji Klientów</h2>
+            <h2>Wszystkie Rezerwacje Klientów</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>Stylistka</th>
                         <th>Data</th>
                         <th>Godzina</th>
                         <th>Usługa</th>
@@ -135,11 +144,12 @@
     var db = firebase.firestore();
     var auth = firebase.auth();
 
+    var currentStylist = 'Amelia';
     var ALL_POSSIBLE_HOURS = ['8:00', '9:00', '10:30', '12:00', '13:30', '14:00', '15:30', '17:00', '18:30'];
     var currentSettings = { 
         hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], 
         blockedDates: [],
-        blockedSlots: {} // format: {"2026-08-15": ["12:00", "14:00"]}
+        blockedSlots: {} 
     };
 
     document.getElementById('loginBtn').addEventListener('click', function(){
@@ -165,16 +175,24 @@
         }
     });
 
+    window.switchStylist = function(name){
+        currentStylist = name;
+        document.getElementById('tabAmelia').classList.toggle('active', name === 'Amelia');
+        document.getElementById('tabJulia').classList.toggle('active', name === 'Julia');
+        document.getElementById('currentStylistName').textContent = name;
+        document.getElementById('saveBtnStylist').textContent = name;
+        loadSettings();
+    };
+
     function populateHourSelect(){
         var sel = document.getElementById('blockSlotHour');
         sel.innerHTML = '';
-        ALL_POSSIBLE_HOURS.forEach(function(h){
-            sel.innerHTML += `<option value="${h}">${h}</option>`;
-        });
+        ALL_POSSIBLE_HOURS.forEach(function(h){ sel.innerHTML += `<option value="${h}">${h}</option>`; });
     }
 
     function loadSettings(){
-        db.collection('ustawienia').doc('harmonogram').get().then(function(doc){
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).get().then(function(doc){
+            currentSettings = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
             if(doc.exists){
                 var data = doc.data();
                 if(data.hours) currentSettings.hours = data.hours;
@@ -192,11 +210,7 @@
         container.innerHTML = '';
         ALL_POSSIBLE_HOURS.forEach(function(h){
             var isChecked = currentSettings.hours.includes(h) ? 'checked' : '';
-            container.innerHTML += `
-                <label class="hour-checkbox">
-                    <input type="checkbox" value="${h}" ${isChecked} class="hour-cb"> ${h}
-                </label>
-            `;
+            container.innerHTML += `<label class="hour-checkbox"><input type="checkbox" value="${h}" ${isChecked} class="hour-cb"> ${h}</label>`;
         });
     }
 
@@ -204,7 +218,7 @@
         var list = document.getElementById('blockedDatesList');
         list.innerHTML = '';
         (currentSettings.blockedDates || []).forEach(function(d, index){
-            list.innerHTML += `<li style="margin-bottom: 4px;"><b>${d}</b> <a href="#" onclick="removeBlockedDate(${index})" style="color:red; margin-left:10px;">[Usuń blokadę]</a></li>`;
+            list.innerHTML += `<li style="margin-bottom: 4px;"><b>${d}</b> <a href="#" onclick="removeBlockedDate(${index})" style="color:red; margin-left:10px;">[Usuń]</a></li>`;
         });
     }
 
@@ -212,15 +226,13 @@
         var list = document.getElementById('blockedSlotsList');
         list.innerHTML = '';
         var slotsObj = currentSettings.blockedSlots || {};
-        
         Object.keys(slotsObj).forEach(function(dateKey){
             slotsObj[dateKey].forEach(function(hour, hIndex){
-                list.innerHTML += `<li style="margin-bottom: 4px;"><b>${dateKey}</b> o godz. <b>${hour}</b> <a href="#" onclick="removeBlockedSlot('${dateKey}', ${hIndex})" style="color:red; margin-left:10px;">[Usuń blokadę]</a></li>`;
+                list.innerHTML += `<li style="margin-bottom: 4px;"><b>${dateKey}</b> godz. <b>${hour}</b> <a href="#" onclick="removeBlockedSlot('${dateKey}', ${hIndex})" style="color:red; margin-left:10px;">[Usuń]</a></li>`;
             });
         });
     }
 
-    // Dodawanie całych dni
     document.getElementById('addBlockedDateBtn').addEventListener('click', function(){
         var dateVal = document.getElementById('blockDateInput').value;
         if(dateVal && !currentSettings.blockedDates.includes(dateVal)){
@@ -234,16 +246,12 @@
         renderBlockedDates();
     };
 
-    // Dodawanie konkretnych godzin w dniu
     document.getElementById('addBlockedSlotBtn').addEventListener('click', function(){
         var dateVal = document.getElementById('blockSlotDate').value;
         var hourVal = document.getElementById('blockSlotHour').value;
-        
         if(!dateVal || !hourVal) return;
-
         if(!currentSettings.blockedSlots) currentSettings.blockedSlots = {};
         if(!currentSettings.blockedSlots[dateVal]) currentSettings.blockedSlots[dateVal] = [];
-
         if(!currentSettings.blockedSlots[dateVal].includes(hourVal)){
             currentSettings.blockedSlots[dateVal].push(hourVal);
             renderBlockedSlots();
@@ -252,23 +260,18 @@
 
     window.removeBlockedSlot = function(dateKey, hIndex){
         currentSettings.blockedSlots[dateKey].splice(hIndex, 1);
-        if(currentSettings.blockedSlots[dateKey].length === 0){
-            delete currentSettings.blockedSlots[dateKey];
-        }
+        if(currentSettings.blockedSlots[dateKey].length === 0) delete currentSettings.blockedSlots[dateKey];
         renderBlockedSlots();
     };
 
-    // Zapisywanie wszystkiego do bazy
     document.getElementById('saveSettingsBtn').addEventListener('click', function(){
         var selectedHours = [];
         document.querySelectorAll('.hour-cb:checked').forEach(cb => selectedHours.push(cb.value));
         currentSettings.hours = selectedHours;
 
-        db.collection('ustawienia').doc('harmonogram').set(currentSettings).then(function(){
-            alert('Wszystkie ustawienia i blokady zostały pomyślnie zapisane!');
-        }).catch(function(err){
-            alert('Błąd zapisu: ' + err.message);
-        });
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSettings).then(function(){
+            alert('Zapisano ustawienia dla: ' + currentStylist);
+        }).catch(function(err){ alert('Błąd zapisu: ' + err.message); });
     });
 
     function loadReservations(){
@@ -277,14 +280,16 @@
             tbody.innerHTML = '';
             snapshot.forEach(function(doc){
                 var data = doc.data();
+                var stylistName = data.stylist || 'Nieprzypisano';
                 tbody.innerHTML += `
                     <tr>
+                        <td><b style="color:var(--primary);">${stylistName}</b></td>
                         <td><b>${data.date}</b></td>
                         <td>${data.time}</td>
                         <td>${data.service}</td>
                         <td>${data.name}</td>
                         <td><a href="tel:${data.phone}">${data.phone}</a></td>
-                        <td><button class="btn btn-danger" onclick="deleteRes('${doc.id}')">Anuluj / Usuń</button></td>
+                        <td><button class="btn btn-danger" onclick="deleteRes('${doc.id}')">Anuluj</button></td>
                     </tr>
                 `;
             });
