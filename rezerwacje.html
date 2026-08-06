@@ -96,7 +96,7 @@
         .cal-day.empty { visibility: hidden; }
         .cal-day.past { color: #d5d5d5; cursor: not-allowed; }
         .cal-day.full { background: #e0e0e0; color: #999; cursor: not-allowed; text-decoration: line-through; }
-        .cal-day.picked { background: var(--primary); color: var(--light); text-decoration: none; }
+        .cal-day.picked { background: var(--primary) !important; color: var(--light) !important; font-weight: bold; text-decoration: none; }
 
         .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
         .slot { padding: 12px 6px; text-align: center; font-size: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; cursor: pointer; }
@@ -119,14 +119,9 @@
 
         .loading-spinner { text-align: center; padding: 20px; color: #888; font-style: italic; }
 
-        /* Styl ukrywania pola Honeypot */
+        /* Honeypot Antyspam */
         .hp-field {
-            opacity: 0;
-            position: absolute;
-            top: 0; left: 0;
-            height: 0; width: 0;
-            z-index: -1;
-            overflow: hidden;
+            opacity: 0; position: absolute; top: 0; left: 0; height: 0; width: 0; z-index: -1; overflow: hidden;
         }
     </style>
 </head>
@@ -136,7 +131,6 @@
         <a href="index.html" class="logo">SENS.</a>
         <ul class="nav-links">
             <li><a href="index.html">Start</a></li>
-            <li><a href="onas.html">O nas</a></li>
             <li><a href="rezerwacje.html" class="btn-book active">Umów wizytę</a></li>
         </ul>
     </nav>
@@ -228,7 +222,7 @@
             <div class="step" data-step="4">
                 <span class="field-label">4. Dane do rezerwacji</span>
 
-                <!-- UKRYTE POLE HONEYPOT (Antyspam) -->
+                <!-- UKRYTE POLE HONEYPOT -->
                 <div class="hp-field" aria-hidden="true">
                     <input type="text" id="hp_user_website" name="user_website" tabindex="-1" autocomplete="off">
                 </div>
@@ -268,7 +262,6 @@
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
-    // Zabezpieczenie czasowe przed bota (wymaga min. 3 sekund od wejścia na stronę)
     var pageLoadTime = Date.now();
 
     var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
@@ -375,12 +368,8 @@
                                     !((setJulia.blockedSlots || {})[key] || []).includes(h) && 
                                     !takenJulia.includes(h);
 
-                    if (ameliaFree) {
-                        foundSlots.push({ dateKey: key, dateObj: new Date(checkDate), time: h, stylist: 'Amelia' });
-                    }
-                    if (juliaFree) {
-                        foundSlots.push({ dateKey: key, dateObj: new Date(checkDate), time: h, stylist: 'Julia' });
-                    }
+                    if (ameliaFree) foundSlots.push({ dateKey: key, dateObj: new Date(checkDate), time: h, stylist: 'Amelia' });
+                    if (juliaFree) foundSlots.push({ dateKey: key, dateObj: new Date(checkDate), time: h, stylist: 'Julia' });
 
                     if (foundSlots.length >= 3) break;
                 }
@@ -438,7 +427,6 @@
 
         var startDateKey = dateKey(calViewYear, calViewMonth, 1);
         var endDateKey = dateKey(calViewYear, calViewMonth, daysInMonth);
-
         var stylistsToCheck = state.stylist === 'ANY' ? ['Amelia', 'Julia'] : [state.stylist];
 
         Promise.all([
@@ -460,6 +448,7 @@
                 cell.className = 'cal-day';
                 cell.textContent = d;
                 var key = dateKey(calViewYear, calViewMonth, d);
+                cell.dataset.date = key;
 
                 if (cellDate.getTime() < todayMidnight.getTime()){
                     cell.classList.add('past');
@@ -492,9 +481,9 @@
                         cell.classList.add('full');
                     } else {
                         if (state.date === key) cell.classList.add('picked');
-                        (function(k){
-                            cell.addEventListener('click', function(){ pickDate(k); });
-                        })(key);
+                        (function(k, cTarget){
+                            cTarget.addEventListener('click', function(){ pickDate(k, cTarget); });
+                        })(key, cell);
                     }
                 }
                 grid.appendChild(cell);
@@ -502,16 +491,16 @@
         });
     }
 
-    function pickDate(key){
+    function pickDate(key, cellTarget){
         state.date = key;
         state.time = null;
         document.querySelectorAll('.fast-card').forEach(c => c.classList.remove('picked'));
         
-        document.querySelectorAll('.cal-day').forEach(cell => {
-            if(!cell.classList.contains('past') && !cell.classList.contains('full')){
-                cell.classList.remove('picked');
-            }
-        });
+        // Odznaczenie wszystkich innych dni w kalendarzu i podświetlenie klikniętego
+        document.querySelectorAll('.cal-day').forEach(cell => cell.classList.remove('picked'));
+        if(cellTarget) {
+            cellTarget.classList.add('picked');
+        }
 
         var d = new Date(key + 'T00:00:00');
         document.getElementById('slotsDateLabel').textContent = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
@@ -611,21 +600,15 @@
     }
 
     document.getElementById('submitBtn').addEventListener('click', function(){
-        // 1. ANTYSPAM: Weryfikacja ukrytego pola Honeypot
+        // ANTYSPAM: Honeypot Check
         var honeypotVal = document.getElementById('hp_user_website').value;
         if (honeypotVal !== '') {
-            console.warn("Wykryto próbę spamu (Honeypot). Zapis zablokowany.");
-            // Udajemy sukces dla bota, ale nic nie zapisujemy w bazie
-            document.getElementById('confirmText').innerHTML = 'Dziękujemy! Rezerwacja została przyjęta.';
             goToStep(5);
             return;
         }
 
-        // 2. ANTYSPAM: Weryfikacja czasu wypełniania (zabezpieczenie przed błyskawicznym botem)
-        var timeElapsed = Date.now() - pageLoadTime;
-        if (timeElapsed < 2500) { // poniżej 2.5 sekundy
-            console.warn("Wykryto zbyt szybkie wysłanie formularza. Zapis zablokowany.");
-            document.getElementById('confirmText').innerHTML = 'Dziękujemy! Rezerwacja została przyjęta.';
+        // ANTYSPAM: Time Check
+        if ((Date.now() - pageLoadTime) < 2500) {
             goToStep(5);
             return;
         }
