@@ -24,7 +24,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; color: var(--dark); background: #f9f6f0; padding: 20px; }
-        .admin-card { max-width: 900px; margin: 0 auto; background: var(--light); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .admin-card { max-width: 950px; margin: 0 auto; background: var(--light); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 
         h1, h2 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
         .stylist-selector { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid var(--secondary); padding-bottom: 15px; }
@@ -34,7 +34,7 @@
         .section-box { border: 1px solid var(--line); padding: 20px; border-radius: 12px; margin-bottom: 25px; background: #fff; }
         .section-box h3 { font-size: 16px; margin-bottom: 15px; color: var(--primary-dark); }
 
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-size: 12px; font-weight: 600; color: #777; text-transform: uppercase; }
         .input, select { padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; width: 100%; font-family: inherit; }
@@ -45,11 +45,14 @@
 
         .btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
         .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+        .btn-danger { background: var(--danger); padding: 5px 10px; font-size: 12px; border-radius: 6px; }
 
-        .res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .res-table th, .res-table td { border-bottom: 1px solid var(--line); padding: 12px 8px; text-align: left; font-size: 13.5px; }
+        .res-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .res-table th, .res-table td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: left; font-size: 13.5px; }
         .res-table th { background: var(--secondary); font-size: 12px; font-weight: 600; }
+
+        .blocked-tag { display: inline-flex; align-items: center; gap: 8px; background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 6px 12px; border-radius: 20px; font-size: 13px; margin: 4px; }
+        .blocked-tag button { background: none; border: none; color: #d9534f; cursor: pointer; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -92,9 +95,7 @@
                     </div>
                     <div class="form-group">
                         <label>Godzina</label>
-                        <select id="mTime" class="input" required>
-                            <!-- Wygenerowane dynamicznie -->
-                        </select>
+                        <select id="mTime" class="input" required></select>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success" id="addManualBtn">+ Zapisz wizytę</button>
@@ -110,7 +111,7 @@
             <button class="btn" onclick="saveWorkingHours()">Zapisz godziny pracy</button>
         </div>
 
-        <!-- BLOKOWANIE CAŁEGO DNI LUB JEDNEJ GODZINY -->
+        <!-- BLOKOWANIE PRZEDZIAŁU CZASOWEGO LUB DNI -->
         <div class="section-box">
             <h3>🚫 Blokowanie terminu / urlop (<span class="current-stylist-name">Amelia</span>)</h3>
             <div class="form-row">
@@ -122,15 +123,27 @@
                     <label>Co zablokować?</label>
                     <select id="blockType" class="input" onchange="toggleBlockHourSelect()">
                         <option value="DAY">Cały dzień wolny / Urlop</option>
-                        <option value="HOUR">Pojedynczą godzinę</option>
+                        <option value="HOURS">Przedział godzinowy (od-do)</option>
                     </select>
                 </div>
-                <div class="form-group" id="blockHourWrap" style="display:none;">
-                    <label>Godzina do zablokowania</label>
-                    <select id="blockHour" class="input"></select>
+                <div class="form-group block-hour-range" style="display:none;">
+                    <label>Godzina Od</label>
+                    <select id="blockTimeFrom" class="input"></select>
+                </div>
+                <div class="form-group block-hour-range" style="display:none;">
+                    <label>Godzina Do</label>
+                    <select id="blockTimeTo" class="input"></select>
                 </div>
             </div>
             <button class="btn" style="background: #e67e22;" onclick="saveBlockade()">Zablokuj termin</button>
+        </div>
+
+        <!-- LISTA ZABLOKOWANYCH DNI I GODZIN -->
+        <div class="section-box">
+            <h3>🔒 Aktywne blokady i urlopy (<span class="current-stylist-name">Amelia</span>)</h3>
+            <div id="blockedList">
+                <!-- Ładowane z kodu JS -->
+            </div>
         </div>
 
         <!-- LISTA NADCHODZĄCYCH REZERWACJI -->
@@ -174,8 +187,8 @@
     var ALL_POSSIBLE_HOURS = ['8:00', '9:00', '10:30', '12:00', '13:30', '14:00', '15:30', '17:00', '18:30'];
     var currentSchedule = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
 
-    // Ustawienie dzisiejszej daty jako domyślnej w formularzu
     document.getElementById('mDate').valueAsDate = new Date();
+    document.getElementById('blockDate').valueAsDate = new Date();
 
     function switchStylist(name) {
         currentStylist = name;
@@ -185,18 +198,19 @@
     }
 
     function loadStylistData() {
-        // Ładowanie grafiku
         db.collection('ustawienia').doc('harmonogram_' + currentStylist).get().then(doc => {
             if(doc.exists) {
                 currentSchedule = doc.data();
+                if(!currentSchedule.blockedDates) currentSchedule.blockedDates = [];
+                if(!currentSchedule.blockedSlots) currentSchedule.blockedSlots = {};
             } else {
                 currentSchedule = { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
             }
             renderHoursGrid();
             populateHourSelects();
+            renderBlockedItems();
         });
 
-        // Ładowanie wizyt
         loadReservations();
     }
 
@@ -208,23 +222,31 @@
             var chip = document.createElement('div');
             chip.className = 'hour-chip' + (isSelected ? ' selected' : '');
             chip.textContent = h;
-            chip.onclick = function() {
-                chip.classList.toggle('selected');
-            };
+            chip.onclick = function() { chip.classList.toggle('selected'); };
             grid.appendChild(chip);
         });
     }
 
     function populateHourSelects() {
         var mTime = document.getElementById('mTime');
-        var blockHour = document.getElementById('blockHour');
+        var fromSelect = document.getElementById('blockTimeFrom');
+        var toSelect = document.getElementById('blockTimeTo');
+        
         mTime.innerHTML = '';
-        blockHour.innerHTML = '';
+        fromSelect.innerHTML = '';
+        toSelect.innerHTML = '';
 
         ALL_POSSIBLE_HOURS.forEach(h => {
             mTime.innerHTML += `<option value="${h}">${h}</option>`;
-            blockHour.innerHTML += `<option value="${h}">${h}</option>`;
+            fromSelect.innerHTML += `<option value="${h}">${h}</option>`;
+            toSelect.innerHTML += `<option value="${h}">${h}</option>`;
         });
+    }
+
+    function toggleBlockHourSelect() {
+        var type = document.getElementById('blockType').value;
+        var ranges = document.querySelectorAll('.block-hour-range');
+        ranges.forEach(el => el.style.display = (type === 'HOURS') ? 'block' : 'none');
     }
 
     function saveWorkingHours() {
@@ -240,11 +262,7 @@
         .catch(err => alert('Błąd: ' + err.message));
     }
 
-    function toggleBlockHourSelect() {
-        var type = document.getElementById('blockType').value;
-        document.getElementById('blockHourWrap').style.display = (type === 'HOUR') ? 'block' : 'none';
-    }
-
+    // ZAPISYWANIE BLOKADY (URLOP LUB OD-DO)
     function saveBlockade() {
         var date = document.getElementById('blockDate').value;
         var type = document.getElementById('blockType').value;
@@ -252,21 +270,93 @@
         if(!date) { alert('Wybierz datę!'); return; }
 
         if (type === 'DAY') {
-            if(!currentSchedule.blockedDates) currentSchedule.blockedDates = [];
-            if(!currentSchedule.blockedDates.includes(date)) currentSchedule.blockedDates.push(date);
+            if(!currentSchedule.blockedDates.includes(date)) {
+                currentSchedule.blockedDates.push(date);
+            }
         } else {
-            var hour = document.getElementById('blockHour').value;
-            if(!currentSchedule.blockedSlots) currentSchedule.blockedSlots = {};
-            if(!currentSchedule.blockedSlots[date]) currentSchedule.blockedSlots[date] = [];
-            if(!currentSchedule.blockedSlots[date].includes(hour)) currentSchedule.blockedSlots[date].push(hour);
+            var from = document.getElementById('blockTimeFrom').value;
+            var to = document.getElementById('blockTimeTo').value;
+
+            var fromIdx = ALL_POSSIBLE_HOURS.indexOf(from);
+            var toIdx = ALL_POSSIBLE_HOURS.indexOf(to);
+
+            if(fromIdx > toIdx) {
+                alert('Godzina "Od" nie może być późniejsza niż godzina "Do"!');
+                return;
+            }
+
+            var hoursToBlock = ALL_POSSIBLE_HOURS.slice(fromIdx, toIdx + 1);
+
+            if(!currentSchedule.blockedSlots[date]) {
+                currentSchedule.blockedSlots[date] = [];
+            }
+
+            hoursToBlock.forEach(h => {
+                if(!currentSchedule.blockedSlots[date].includes(h)) {
+                    currentSchedule.blockedSlots[date].push(h);
+                }
+            });
         }
 
         db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSchedule, { merge: true })
-        .then(() => alert('Zablokowano termin!'))
+        .then(() => {
+            alert('Zapisano blokadę!');
+            renderBlockedItems();
+        })
         .catch(err => alert('Błąd: ' + err.message));
     }
 
-    // DODAWANIE WIZYTY TELEFONICZNEJ / RĘCZNEJ
+    // WYŚWIETLANIE LISTY ZABLOKOWANYCH DNI I GODZIN
+    function renderBlockedItems() {
+        var container = document.getElementById('blockedList');
+        container.innerHTML = '';
+
+        var hasBlockades = false;
+
+        // 1. Dni wolne (Urlopy)
+        if(currentSchedule.blockedDates && currentSchedule.blockedDates.length > 0) {
+            currentSchedule.blockedDates.sort().forEach(d => {
+                hasBlockades = true;
+                var tag = document.createElement('span');
+                tag.className = 'blocked-tag';
+                tag.innerHTML = `📅 <b>${d}</b> (Cały dzień) <button onclick="unblockDate('${d}')">&times;</button>`;
+                container.appendChild(tag);
+            });
+        }
+
+        // 2. Godziny zablokowane
+        if(currentSchedule.blockedSlots) {
+            Object.keys(currentSchedule.blockedSlots).sort().forEach(d => {
+                var hours = currentSchedule.blockedSlots[d];
+                if(hours && hours.length > 0) {
+                    hasBlockades = true;
+                    var tag = document.createElement('span');
+                    tag.className = 'blocked-tag';
+                    tag.innerHTML = `⏰ <b>${d}</b>: ${hours.join(', ')} <button onclick="unblockSlots('${d}')">&times;</button>`;
+                    container.appendChild(tag);
+                }
+            });
+        }
+
+        if(!hasBlockades) {
+            container.innerHTML = '<p style="font-size:13px; color:#888;">Brak zablokowanych terminów i urlopów.</p>';
+        }
+    }
+
+    // USUWANIE BLOKAD
+    function unblockDate(date) {
+        currentSchedule.blockedDates = currentSchedule.blockedDates.filter(d => d !== date);
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSchedule, { merge: true })
+        .then(() => renderBlockedItems());
+    }
+
+    function unblockSlots(date) {
+        delete currentSchedule.blockedSlots[date];
+        db.collection('ustawienia').doc('harmonogram_' + currentStylist).set(currentSchedule, { merge: true })
+        .then(() => renderBlockedItems());
+    }
+
+    // DODAWANIE WIZYTY RĘCZNEJ
     document.getElementById('manualResForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -299,6 +389,7 @@
         });
     });
 
+    // ŁADOWANIE LISTY REZERWACJI
     function loadReservations() {
         var tbody = document.getElementById('reservationsList');
         tbody.innerHTML = '<tr><td colspan="6">Ładowanie rezerwacji...</td></tr>';
@@ -315,7 +406,6 @@
                   resArray.push(data);
               });
 
-              // Sortowanie od najbliższych dat
               resArray.sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
 
               if(resArray.length === 0) {
@@ -347,7 +437,7 @@
         }
     }
 
-    // Pierwsze załadowanie danych dla Amelii
+    // Start panelu
     loadStylistData();
 </script>
 </body>
