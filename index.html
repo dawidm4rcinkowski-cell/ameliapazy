@@ -83,7 +83,7 @@
         .nav-links .btn-book:hover { background: var(--primary-dark); color: var(--light); }
 
         /* =========================================================
-           HAMBURGER — widoczny na węższych ekranach
+           HAMBURGER — Poprawiony na 820px, żeby menu mieściło się poprawnie
            ========================================================= */
         .hamburger {
             display: none;
@@ -365,6 +365,7 @@
                 <h3>Ważne informacje</h3>
                 <ul>
                     <li><a href="polityka.html">Polityka prywatności</a></li>
+                    <li><a href="regulamin.html">Regulamin salonu</a></li>
                     <li><a href="rezerwacje.html">Zarezerwuj termin</a></li>
                 </ul>
             </div>
@@ -374,7 +375,7 @@
         </div>
     </footer>
 
-    <!-- UI Skrypty -->
+    <!-- UI Skrypty (Efekty wizualne i nawigacja) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navbar = document.getElementById('navbar');
@@ -383,6 +384,7 @@
                 else navbar.classList.remove('scrolled');
             });
 
+            /* Menu hamburgerowe (mobile) */
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
 
@@ -392,6 +394,7 @@
                 hamburger.setAttribute('aria-expanded', isOpen);
             });
 
+            /* Zamknij menu po kliknięciu w link */
             navLinks.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     navLinks.classList.remove('open');
@@ -400,6 +403,24 @@
                 });
             });
         });
+    </script>
+
+    <!-- FIREBASE INIT (Moduły) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
+            authDomain: "pazyyyy.firebaseapp.com",
+            projectId: "pazyyyy",
+            storageBucket: "pazyyyy.firebasestorage.app",
+            messagingSenderId: "135537952133",
+            appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
+            measurementId: "G-YFWQ8J89SZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        console.log("Firebase (projekt pazyyyy) połączone pomyślnie!");
     </script>
 </body>
 </html>
