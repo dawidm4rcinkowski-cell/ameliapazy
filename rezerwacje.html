@@ -7,9 +7,9 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-    <!-- Firebase (baza rezerwacji) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Ładowanie Firebase SDK (App + Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
@@ -17,9 +17,6 @@
             --primary-dark: #a04e30;
             --secondary: #f2e6d5;
             --accent-green: #7c8c5f;
-            --accent-green-light: #e6ebdd;
-            --accent-ochre: #c99a3f;
-            --accent-ochre-light: #f5ead0;
             --dark: #333333;
             --light: #ffffff;
             --text: #4a4a4a;
@@ -42,7 +39,6 @@
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; }
 
-        /* --- NAVBAR --- */
         nav {
             position: fixed;
             top: 0; left: 0;
@@ -76,9 +72,6 @@
         }
         .nav-links .btn-book:hover { background: var(--primary-dark); color: var(--light); }
 
-        /* =========================================================
-           HAMBURGER — widoczny tylko na wąskich ekranach mobilnych
-           ========================================================= */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -95,14 +88,9 @@
             background: var(--dark);
             transition: all 0.3s ease;
         }
-        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .hamburger.open span:nth-child(2) { opacity: 0; }
-        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Tylko na wąskich telefonach chowamy menu i pokazujemy hamburger. */
         @media (max-width: 480px) {
             .hamburger { display: flex; }
-
             .nav-links {
                 position: fixed;
                 top: 80px;
@@ -126,7 +114,6 @@
             }
         }
 
-        /* --- PAGE HEADER --- */
         .page-header {
             position: relative;
             padding: 4.5rem 5% 3rem;
@@ -134,26 +121,6 @@
             background: linear-gradient(160deg, #f7ede0 0%, #fbf5ec 45%, var(--light) 100%);
             overflow: hidden;
         }
-        .page-header::before,
-        .page-header::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.25;
-            z-index: 0;
-        }
-        .page-header::before {
-            width: 280px; height: 280px;
-            background: var(--accent-green);
-            top: -100px; left: 4%;
-        }
-        .page-header::after {
-            width: 240px; height: 240px;
-            background: var(--accent-ochre);
-            top: -90px; right: 6%;
-        }
-        .page-header > * { position: relative; z-index: 1; }
         .page-header p.eyebrow {
             font-size: 0.85rem;
             letter-spacing: 0.16em;
@@ -165,7 +132,6 @@
         .page-header h1 { font-size: 2.4rem; color: var(--dark); margin-bottom: 0.6rem; }
         .page-header p.lead { max-width: 520px; margin: 0 auto; color: #666; font-size: 1rem; }
 
-        /* --- BOOKING WRAP --- */
         .booking-wrap {
             max-width: 640px;
             margin: 0 auto;
@@ -247,7 +213,6 @@
         .slot:hover { border-color: var(--primary); }
         .slot.picked { background: var(--primary); color: var(--light); border-color: var(--primary); }
         .slot.taken { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
-        .slot.taken:hover { border-color: var(--line); }
         .hint { font-size: 13.5px; color: #9a9a9a; margin: 10px 0 0; }
 
         .actions { display: flex; gap: 10px; margin-top: 10px; }
@@ -274,37 +239,28 @@
 
         .error { color: #b3653f; font-size: 13px; margin: -12px 0 16px; display: none; }
         .error.show { display: block; }
-
-        @media (max-width: 500px) {
-            .booking-card { padding: 1.8rem 1.4rem; }
-            .page-header h1 { font-size: 1.9rem; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- --- NAVBAR --- -->
     <nav id="navbar">
         <a href="index.html" class="logo">SENS.</a>
         <ul class="nav-links" id="navLinks">
             <li><a href="index.html#hero">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
-            <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book active">Umów wizytę</a></li>
         </ul>
-        <button class="hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false">
+        <button class="hamburger" id="hamburger">
             <span></span><span></span><span></span>
         </button>
     </nav>
 
-    <!-- --- PAGE HEADER --- -->
     <header class="page-header">
         <p class="eyebrow">Rezerwacja</p>
         <h1>Umów swoją wizytę</h1>
         <p class="lead">Wybierz usługę, dogodny termin i zostaw kontakt — resztą zajmiemy się my.</p>
     </header>
 
-    <!-- --- BOOKING FLOW --- -->
     <div class="booking-wrap">
         <div class="booking-card">
 
@@ -314,10 +270,10 @@
                 <span data-step="3"></span>
             </div>
 
-            <!-- STEP 1: usługa -->
+            <!-- STEP 1 -->
             <div class="step active" data-step="1">
                 <span class="field-label">Wybierz usługę</span>
-                <div class="service-list" id="serviceList">
+                <div class="service-list">
                     <label class="service">
                         <input type="radio" name="service" value="Manicure klasyczny (45 min)">
                         <span class="service-name">Manicure klasyczny</span>
@@ -345,14 +301,14 @@
                 </div>
             </div>
 
-            <!-- STEP 2: termin -->
+            <!-- STEP 2 -->
             <div class="step" data-step="2">
                 <span class="field-label">Wybierz dzień</span>
-                <div class="calendar" id="calendar">
+                <div class="calendar">
                     <div class="cal-header">
-                        <button type="button" class="cal-nav" id="calPrev" aria-label="Poprzedni miesiąc">&lsaquo;</button>
+                        <button type="button" class="cal-nav" id="calPrev">&lsaquo;</button>
                         <span class="cal-month" id="calMonthLabel"></span>
-                        <button type="button" class="cal-nav" id="calNext" aria-label="Następny miesiąc">&rsaquo;</button>
+                        <button type="button" class="cal-nav" id="calNext">&rsaquo;</button>
                     </div>
                     <div class="cal-weekdays">
                         <span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span>
@@ -364,7 +320,7 @@
                     <span class="field-label">Dostępne godziny — <span id="slotsDateLabel"></span></span>
                     <div class="slots" id="slots"></div>
                     <p class="hint" id="slotsLoading" style="display:none;">Sprawdzam dostępność…</p>
-                    <p class="hint" id="slotsNone" style="display:none;">Brak wolnych terminów tego dnia — wybierz inny dzień.</p>
+                    <p class="hint" id="slotsNone" style="display:none;">Brak wolnych terminów tego dnia.</p>
                 </div>
 
                 <p class="error" id="errSlot">Wybierz dzień i godzinę.</p>
@@ -374,7 +330,7 @@
                 </div>
             </div>
 
-            <!-- STEP 3: dane kontaktowe -->
+            <!-- STEP 3 -->
             <div class="step" data-step="3">
                 <span class="field-label">Imię i nazwisko</span>
                 <input type="text" class="input" id="clientName" placeholder="np. Anna Kowalska" style="margin-bottom:18px;">
@@ -391,323 +347,204 @@
                 </div>
             </div>
 
-            <!-- STEP 4: potwierdzenie -->
+            <!-- STEP 4 -->
             <div class="step" data-step="4">
                 <div class="confirm-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </div>
-                <h3 class="confirm-title">Wizyta zgłoszona</h3>
+                <h3 class="confirm-title">Wizyta zgłoszona!</h3>
                 <p class="confirm-text" id="confirmText"></p>
                 <div class="actions">
-                    <a href="index.html" class="btn-primary" style="text-align:center; text-decoration:none; display:block;">Wróć na stronę główną</a>
+                    <a href="index.html" class="btn-primary" style="text-align:center; display:block;">Wróć na stronę główną</a>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navbar = document.getElementById('navbar');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) navbar.classList.add('scrolled');
-                else navbar.classList.remove('scrolled');
-            });
+<script>
+    // --- KONFIGURACJA FIREBASE ---
+    var firebaseConfig = {
+      apiKey: "AIzaSyDJFf5eogJDJ2v71OpCvsuS33L95bMD2zw",
+      authDomain: "pazyyyy.firebaseapp.com",
+      databaseURL: "https://pazyyyy-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "pazyyyy",
+      storageBucket: "pazyyyy.firebasestorage.app",
+      messagingSenderId: "135537952133",
+      appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
+      measurementId: "G-YFWQ8J89SZ"
+    };
 
-            /* Menu hamburgerowe (mobile) */
-            const hamburger = document.getElementById('hamburger');
-            const navLinks = document.getElementById('navLinks');
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
 
-            hamburger.addEventListener('click', () => {
-                const isOpen = navLinks.classList.toggle('open');
-                hamburger.classList.toggle('open', isOpen);
-                hamburger.setAttribute('aria-expanded', isOpen);
-            });
+    var ALL_SLOTS = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
+    var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
 
-            navLinks.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    navLinks.classList.remove('open');
-                    hamburger.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                });
-            });
+    var state = { service:null, date:null, time:null, name:'', phone:'' };
+    var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
+    var calViewYear = todayMidnight.getFullYear();
+    var calViewMonth = todayMidnight.getMonth();
+
+    function goToStep(n){
+        document.querySelectorAll('.step').forEach(function(el){
+            el.classList.toggle('active', el.dataset.step === String(n));
         });
+        document.querySelectorAll('#progress span').forEach(function(el){
+            var s = parseInt(el.dataset.step, 10);
+            el.classList.toggle('done', s < n);
+            el.classList.toggle('current', s === n);
+        });
+    }
 
-        (function(){
-            // ============================================================
-            // KONFIGURACJA FIREBASE
-            // ============================================================
-            var firebaseConfig = {
-                apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
-                authDomain: "pazyyyy.firebaseapp.com",
-                projectId: "pazyyyy",
-                storageBucket: "pazyyyy.firebasestorage.app",
-                messagingSenderId: "135537952133",
-                appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
-                measurementId: "G-YFWQ8J89SZ"
-            };
-            var db = null;
-            try {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                
-                // WARM-UP: Rozgrzewamy bazę w tle zaraz po załadowaniu strony,
-                // żeby klient nie musiał czekać przy kliknięciu w kalendarz.
-                db.collection('rezerwacje').limit(1).get().catch(function(e){});
-            } catch (e) {
-                console.warn('Błąd konfiguracji Firebase.', e);
+    // Wybór usługi
+    document.querySelectorAll('input[name="service"]').forEach(function(input){
+        input.addEventListener('change', function(){
+            document.querySelectorAll('.service').forEach(l => l.classList.remove('picked'));
+            input.closest('.service').classList.add('picked');
+            state.service = input.value;
+            document.getElementById('errService').classList.remove('show');
+        });
+    });
+
+    document.getElementById('next1').addEventListener('click', function(){
+        if(!state.service){ document.getElementById('errService').classList.add('show'); return; }
+        renderCalendar();
+        goToStep(2);
+    });
+
+    // Kalendarz
+    function pad(n){ return n < 10 ? '0' + n : '' + n; }
+    function dateKey(y, m, d){ return y + '-' + pad(m + 1) + '-' + pad(d); }
+
+    function renderCalendar(){
+        var grid = document.getElementById('calGrid');
+        document.getElementById('calMonthLabel').textContent = MONTHS[calViewMonth] + ' ' + calViewYear;
+
+        var firstDay = new Date(calViewYear, calViewMonth, 1);
+        var startOffset = (firstDay.getDay() + 6) % 7;
+        var daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+
+        grid.innerHTML = '';
+        for (var i = 0; i < startOffset; i++){
+            var empty = document.createElement('div');
+            empty.className = 'cal-day empty';
+            grid.appendChild(empty);
+        }
+        for (var d = 1; d <= daysInMonth; d++){
+            var cellDate = new Date(calViewYear, calViewMonth, d);
+            var cell = document.createElement('div');
+            cell.className = 'cal-day';
+            cell.textContent = d;
+
+            if (cellDate.getTime() === todayMidnight.getTime()) cell.classList.add('today');
+            if (cellDate.getTime() < todayMidnight.getTime()){
+                cell.classList.add('past');
+            } else {
+                var key = dateKey(calViewYear, calViewMonth, d);
+                if (state.date === key) cell.classList.add('picked');
+                (function(k){
+                    cell.addEventListener('click', function(){ pickDate(k); });
+                })(key);
             }
+            grid.appendChild(cell);
+        }
+    }
 
-            var ALL_SLOTS = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
-            var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+    function pickDate(key){
+        state.date = key;
+        state.time = null;
+        renderCalendar();
 
-            var state = { service:null, date:null, time:null, name:'', phone:'' };
-            var calViewYear, calViewMonth;
-            var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
+        var d = new Date(key + 'T00:00:00');
+        document.getElementById('slotsDateLabel').textContent = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
+        document.getElementById('slotsWrap').style.display = 'block';
+        loadSlotsForDate(key);
+    }
 
-            function goToStep(n){
-                document.querySelectorAll('.step').forEach(function(el){
-                    el.classList.toggle('active', el.dataset.step === String(n));
-                });
-                document.querySelectorAll('#progress span').forEach(function(el){
-                    var s = parseInt(el.dataset.step, 10);
-                    el.classList.toggle('done', s < n);
-                    el.classList.toggle('current', s === n);
-                });
-                window.scrollTo({ top: document.querySelector('.booking-card').offsetTop - 100, behavior: 'smooth' });
-            }
+    function loadSlotsForDate(key){
+        var slotsEl = document.getElementById('slots');
+        slotsEl.innerHTML = '';
+        
+        db.collection('rezerwacje').where('date', '==', key).get()
+            .then(function(snapshot){
+                var taken = [];
+                snapshot.forEach(doc => taken.push(doc.data().time));
 
-            // Step 1
-            var serviceInputs = document.querySelectorAll('input[name="service"]');
-            serviceInputs.forEach(function(input){
-                input.addEventListener('change', function(){
-                    document.querySelectorAll('.service').forEach(function(l){ l.classList.remove('picked'); });
-                    input.closest('.service').classList.add('picked');
-                    state.service = input.value;
-                    document.getElementById('errService').classList.remove('show');
-                });
-            });
-            document.getElementById('next1').addEventListener('click', function(){
-                if(!state.service){ document.getElementById('errService').classList.add('show'); return; }
-                goToStep(2);
-            });
+                ALL_SLOTS.forEach(function(t){
+                    var el = document.createElement('div');
+                    el.className = 'slot';
+                    el.textContent = t;
 
-            // Step 2: kalendarz
-            function pad(n){ return n < 10 ? '0' + n : '' + n; }
-            function dateKey(y, m, d){ return y + '-' + pad(m + 1) + '-' + pad(d); }
-
-            function renderCalendar(){
-                var grid = document.getElementById('calGrid');
-                document.getElementById('calMonthLabel').textContent = MONTHS[calViewMonth] + ' ' + calViewYear;
-
-                var firstDay = new Date(calViewYear, calViewMonth, 1);
-                var startOffset = (firstDay.getDay() + 6) % 7;
-                var daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
-
-                grid.innerHTML = '';
-                for (var i = 0; i < startOffset; i++){
-                    var empty = document.createElement('div');
-                    empty.className = 'cal-day empty';
-                    grid.appendChild(empty);
-                }
-                for (var d = 1; d <= daysInMonth; d++){
-                    var cellDate = new Date(calViewYear, calViewMonth, d);
-                    var cell = document.createElement('div');
-                    cell.className = 'cal-day';
-                    cell.textContent = d;
-
-                    if (cellDate.getTime() === todayMidnight.getTime()) cell.classList.add('today');
-                    if (cellDate.getTime() < todayMidnight.getTime()){
-                        cell.classList.add('past');
+                    if (taken.includes(t)){
+                        el.classList.add('taken');
                     } else {
-                        var key = dateKey(calViewYear, calViewMonth, d);
-                        if (state.date === key) cell.classList.add('picked');
-                        cell.addEventListener('click', function(k){
-                            return function(){ pickDate(k); };
-                        }(key));
+                        el.addEventListener('click', function(){
+                            document.querySelectorAll('.slot').forEach(s => s.classList.remove('picked'));
+                            el.classList.add('picked');
+                            state.time = t;
+                            document.getElementById('errSlot').classList.remove('show');
+                        });
                     }
-                    grid.appendChild(cell);
-                }
+                    slotsEl.appendChild(el);
+                });
+            })
+            .catch(err => console.error("Błąd slots:", err));
+    }
 
-                var isCurrentRealMonth = (calViewYear === todayMidnight.getFullYear() && calViewMonth === todayMidnight.getMonth());
-                document.getElementById('calPrev').disabled = isCurrentRealMonth;
-            }
+    document.getElementById('back2').addEventListener('click', function(){ goToStep(1); });
+    document.getElementById('next2').addEventListener('click', function(){
+        if(!state.date || !state.time){ document.getElementById('errSlot').classList.add('show'); return; }
+        updateSummary();
+        goToStep(3);
+    });
 
-            document.getElementById('calPrev').addEventListener('click', function(){
-                calViewMonth--; if (calViewMonth < 0){ calViewMonth = 11; calViewYear--; }
-                renderCalendar();
-            });
-            document.getElementById('calNext').addEventListener('click', function(){
-                calViewMonth++; if (calViewMonth > 11){ calViewMonth = 0; calViewYear++; }
-                renderCalendar();
-            });
+    document.getElementById('back3').addEventListener('click', function(){ goToStep(2); });
 
-            function pickDate(key){
-                state.date = key;
-                state.time = null;
-                renderCalendar();
+    function updateSummary(){
+        var d = new Date(state.date + 'T00:00:00');
+        var dateStr = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
+        document.getElementById('summary').innerHTML =
+            '<b>Usługa:</b> ' + state.service + '<br>' +
+            '<b>Termin:</b> ' + dateStr + ', godz. ' + state.time;
+    }
 
-                var d = new Date(key + 'T00:00:00');
-                document.getElementById('slotsDateLabel').textContent =
-                    d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
-                document.getElementById('slotsWrap').style.display = 'block';
-                document.getElementById('errSlot').classList.remove('show');
-                loadSlotsForDate(key);
-            }
+    // WYSYŁANIE REZERWACJI DO FIREBASE
+    document.getElementById('submitBtn').addEventListener('click', function(){
+        var nameVal = document.getElementById('clientName').value.trim();
+        var phoneVal = document.getElementById('clientPhone').value.trim();
 
-            function loadSlotsForDate(key){
-                var slotsEl = document.getElementById('slots');
-                var loadingEl = document.getElementById('slotsLoading');
-                var noneEl = document.getElementById('slotsNone');
-                
-                slotsEl.innerHTML = '';
-                noneEl.style.display = 'none';
-                loadingEl.style.display = 'block';
+        if(!nameVal || phoneVal.length < 7){
+            document.getElementById('errContact').classList.add('show');
+            return;
+        }
 
-                function renderSlots(takenTimes){
-                    loadingEl.style.display = 'none';
-                    slotsEl.innerHTML = '';
-                    var anyFree = false;
-                    
-                    ALL_SLOTS.forEach(function(t){
-                        var el = document.createElement('div');
-                        el.className = 'slot';
-                        el.textContent = t;
-                        
-                        if (takenTimes.indexOf(t) !== -1){
-                            el.classList.add('taken');
-                        } else {
-                            anyFree = true;
-                            el.addEventListener('click', function(){
-                                document.querySelectorAll('.slot').forEach(function(s){ s.classList.remove('picked'); });
-                                el.classList.add('picked');
-                                state.time = t;
-                                document.getElementById('errSlot').classList.remove('show');
-                            });
-                        }
-                        slotsEl.appendChild(el);
-                    });
-                    
-                    if(!anyFree) {
-                        noneEl.style.display = 'block';
-                    }
-                }
+        var submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Zapisywanie…';
 
-                if (!db){
-                    renderSlots([]);
-                    return;
-                }
-                
-                // TIMEOUT SAFETY: Zabezpieczenie przed zawieszeniem. Jeśli baza
-                // z jakiegoś powodu odpowiada dłużej niż 3.5 sekundy, ładujemy wolne sloty.
-                var isLoaded = false;
-                var fallbackTimer = setTimeout(function(){
-                    if(!isLoaded) {
-                        console.warn('Baza odpowiada zbyt wolno. Ładuję awaryjnie wolne sloty.');
-                        renderSlots([]);
-                    }
-                }, 3500);
-                
-                db.collection('rezerwacje').where('date', '==', key).get()
-                    .then(function(snapshot){
-                        isLoaded = true;
-                        clearTimeout(fallbackTimer);
-                        var taken = [];
-                        snapshot.forEach(function(doc){ taken.push(doc.data().time); });
-                        renderSlots(taken);
-                    })
-                    .catch(function(err){
-                        isLoaded = true;
-                        clearTimeout(fallbackTimer);
-                        console.error('Błąd pobierania rezerwacji:', err);
-                        renderSlots([]);
-                    });
-            }
-
-            document.getElementById('back2').addEventListener('click', function(){ goToStep(1); });
-            document.getElementById('next2').addEventListener('click', function(){
-                if(!state.date || !state.time){ document.getElementById('errSlot').classList.add('show'); return; }
-                updateSummary();
-                goToStep(3);
-            });
-
-            // Step 3
-            document.getElementById('back3').addEventListener('click', function(){ goToStep(2); });
-
-            function updateSummary(){
-                var d = new Date(state.date + 'T00:00:00');
-                var dateStr = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
-                document.getElementById('summary').innerHTML =
-                    '<b>Usługa:</b> ' + state.service + '<br>' +
-                    '<b>Termin:</b> ' + dateStr + ', godz. ' + state.time;
-            }
-
-            document.getElementById('submitBtn').addEventListener('click', function(){
-                var nameVal = document.getElementById('clientName').value.trim();
-                var phoneVal = document.getElementById('clientPhone').value.trim();
-                var phoneOk = /^[0-9+\s-]{7,15}$/.test(phoneVal);
-
-                if(!nameVal || !phoneOk){ document.getElementById('errContact').classList.add('show'); return; }
-                document.getElementById('errContact').classList.remove('show');
-                state.name = nameVal;
-                state.phone = phoneVal;
-
-                var submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Zapisywanie…';
-
-                function finishBooking(){
-                    var d = new Date(state.date + 'T00:00:00');
-                    var dateStr = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
-                    document.getElementById('confirmText').innerHTML =
-                        'Dziękujemy, ' + state.name.split(' ')[0] + '! Zarezerwowaliśmy <b>' + state.service +
-                        '</b> na ' + dateStr + ', godz. ' + state.time + '. Zadzwonimy na numer ' + state.phone + ', aby potwierdzić.';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Potwierdź wizytę';
-                    goToStep(4);
-                }
-
-                if (!db){
-                    finishBooking();
-                    return;
-                }
-
-                db.collection('rezerwacje')
-                    .where('date', '==', state.date)
-                    .where('time', '==', state.time)
-                    .get()
-                    .then(function(snapshot){
-                        if (!snapshot.empty){
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = 'Potwierdź wizytę';
-                            document.getElementById('errContact').textContent =
-                                'Ups, ktoś właśnie zajął ten termin. Wróć krok wstecz i wybierz inną godzinę.';
-                            document.getElementById('errContact').classList.add('show');
-                            return;
-                        }
-                        return db.collection('rezerwacje').add({
-                            service: state.service,
-                            date: state.date,
-                            time: state.time,
-                            name: state.name,
-                            phone: state.phone,
-                            status: 'oczekująca',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(finishBooking);
-                    })
-                    .catch(function(err){
-                        console.error('Błąd zapisu rezerwacji:', err);
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Potwierdź wizytę';
-                        document.getElementById('errContact').textContent = 'Nie udało się zapisać rezerwacji. Spróbuj ponownie.';
-                        document.getElementById('errContact').classList.add('show');
-                    });
-            });
-
-            calViewYear = todayMidnight.getFullYear();
-            calViewMonth = todayMidnight.getMonth();
-            renderCalendar();
-        })();
-    </script>
+        // Zapis rekordu do kolekcji 'rezerwacje'
+        db.collection('rezerwacje').add({
+            service: state.service,
+            date: state.date,
+            time: state.time,
+            name: nameVal,
+            phone: phoneVal,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(function(docRef) {
+            console.log("Sukces! Zapisano rezerwację z ID: ", docRef.id);
+            document.getElementById('confirmText').innerHTML = 
+                'Dziękujemy, <b>' + nameVal + '</b>! Twoja wizyta została zapisana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
+            goToStep(4);
+        })
+        .catch(function(error) {
+            console.error("Błąd podczas zapisu do Firebase: ", error);
+            alert("Wystąpił błąd podczas zapisywania rezerwacji. Sprawdź konsolę przeglądarki (F12).");
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Potwierdź wizytę';
+        });
+    });
+</script>
 </body>
 </html>
