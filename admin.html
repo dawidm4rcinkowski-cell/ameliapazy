@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora - SENS Salon</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Firestore + Auth) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #c1633e;
+            --primary-dark: #a04e30;
+            --secondary: #f2e6d5;
+            --dark: #333333;
+            --light: #ffffff;
+            --line: rgba(51,51,51,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fcfaf7;
+            color: var(--dark);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* --- KARTA LOGOWANIA --- */
+        .login-card {
+            max-width: 400px;
+            margin: 60px auto 0;
+            background: var(--light);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .field {
+            text-align: left;
+            margin-bottom: 1.2rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus { border-color: var(--primary); }
+
+        /* --- PANEL ADMINA --- */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .admin-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .table-card {
+            background: var(--light);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 12px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #777;
+            border-bottom: 2px solid var(--line);
+            background: #faf7f2;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .phone-link {
+            color: var(--primary);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--line);
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { background: #eee; }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-delete:hover { opacity: 0.85; }
+
+        .error {
+            color: #c1633e;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- FORMULARZ LOGOWANIA -->
+    <div class="login-card" id="loginCard">
+        <h2>Panel Salonu SENS</h2>
+        <form id="loginForm">
+            <div class="field">
+                <label>E-mail administratora</label>
+                <input type="email" class="input" id="adminEmail" placeholder="admin@sens.pl" required>
+            </div>
+            <div class="field">
+                <label>Hasło</label>
+                <input type="password" class="input" id="adminPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" id="loginBtn">Zaloguj się</button>
+            <p class="error" id="loginError">Nieprawidłowy e-mail lub hasło.</p>
+        </form>
+    </div>
+
+    <!-- PANEL ADMINA -->
+    <div id="adminPanel" style="display: none;">
+        <div class="admin-header">
+            <h1>Zarządzanie wizytami</h1>
+            <button class="btn-logout" id="logoutBtn">Wyloguj się</button>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Godzina</th>
+                        <th>Usługa</th>
+                        <th>Klient</th>
+                        <th>Telefon</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationsTable">
+                    <tr><td colspan="6">Wczytywanie listy wizyt...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Twoja konfiguracja Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyDJFf5eogJDJ2v71OpCvsuS33L95bMD2zw",
+      authDomain: "pazyyyy.firebaseapp.com",
+      databaseURL: "https://pazyyyy-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "pazyyyy",
+      storageBucket: "pazyyyy.firebasestorage.app",
+      messagingSenderId: "135537952133",
+      appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
+      measurementId: "G-YFWQ8J89SZ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+    var auth = firebase.auth();
+
+    const loginCard = document.getElementById('loginCard');
+    const adminPanel = document.getElementById('adminPanel');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+
+    // Sprawdzanie czy użytkownik jest zalogowany
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            loginCard.style.display = 'none';
+            adminPanel.style.display = 'block';
+            loadReservations();
+        } else {
+            loginCard.style.display = 'block';
+            adminPanel.style.display = 'none';
+        }
+    });
+
+    // Logowanie
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var email = document.getElementById('adminEmail').value;
+        var password = document.getElementById('adminPassword').value;
+        loginError.style.display = 'none';
+
+        auth.signInWithEmailAndPassword(email, password)
+            .catch(function(error) {
+                loginError.style.display = 'block';
+            });
+    });
+
+    // Wylogowanie
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        auth.signOut();
+    });
+
+    // Pobieranie wizyt z bazy
+    function loadReservations() {
+        db.collection('rezerwacje').orderBy('date', 'asc').get()
+            .then(function(snapshot) {
+                var tbody = document.getElementById('reservationsTable');
+                tbody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">Brak zarezerwowanych wizyt.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(function(doc) {
+                    var data = doc.data();
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${data.date}</b></td>
+                        <td>${data.time}</td>
+                        <td>${data.service}</td>
+                        <td>${data.name}</td>
+                        <td><a href="tel:${data.phone}" class="phone-link">${data.phone}</a></td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteBooking('${doc.id}')">Anuluj / Usuń</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(function(err) {
+                console.error("Błąd pobierania danych:", err);
+            });
+    }
+
+    // Usuwanie wizyty
+    window.deleteBooking = function(id) {
+        if (confirm('Czy na pewno chcesz usunąć tę rezerwację? Godzina automatycznie zwolni się dla klientów.')) {
+            db.collection('rezerwacje').doc(id).delete().then(function() {
+                loadReservations();
+            });
+        }
+    };
+</script>
+
+</body>
+</html>
