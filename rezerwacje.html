@@ -99,8 +99,7 @@
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* Tylko na wąskich telefonach chowamy menu i pokazujemy hamburger.
-           Tablety (np. iPad w pionie) zachowują pełne menu. */
+        /* Tylko na wąskich telefonach chowamy menu i pokazujemy hamburger. */
         @media (max-width: 480px) {
             .hamburger { display: flex; }
 
@@ -436,7 +435,7 @@
 
         (function(){
             // ============================================================
-            // KONFIGURACJA FIREBASE — Wpięte docelowe dane
+            // KONFIGURACJA FIREBASE
             // ============================================================
             var firebaseConfig = {
                 apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
@@ -451,6 +450,10 @@
             try {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
+                
+                // WARM-UP: Rozgrzewamy bazę w tle zaraz po załadowaniu strony,
+                // żeby klient nie musiał czekać przy kliknięciu w kalendarz.
+                db.collection('rezerwacje').limit(1).get().catch(function(e){});
             } catch (e) {
                 console.warn('Błąd konfiguracji Firebase.', e);
             }
@@ -557,7 +560,6 @@
                 var loadingEl = document.getElementById('slotsLoading');
                 var noneEl = document.getElementById('slotsNone');
                 
-                // Pokaż UI ładowania
                 slotsEl.innerHTML = '';
                 noneEl.style.display = 'none';
                 loadingEl.style.display = 'block';
@@ -591,22 +593,33 @@
                     }
                 }
 
-                // GŁÓWNA ZMIANA: Zawsze próbujemy wyrenderować wszystkie sloty jako puste,
-                // nawet jeśli połączenie z bazą zawiedzie. Wcześniej skrypt zatrzymywał się w tym miejscu.
                 if (!db){
-                    console.log("Tryb offline: Renderuję wszystkie sloty jako dostępne.");
                     renderSlots([]);
                     return;
                 }
                 
+                // TIMEOUT SAFETY: Zabezpieczenie przed zawieszeniem. Jeśli baza
+                // z jakiegoś powodu odpowiada dłużej niż 3.5 sekundy, ładujemy wolne sloty.
+                var isLoaded = false;
+                var fallbackTimer = setTimeout(function(){
+                    if(!isLoaded) {
+                        console.warn('Baza odpowiada zbyt wolno. Ładuję awaryjnie wolne sloty.');
+                        renderSlots([]);
+                    }
+                }, 3500);
+                
                 db.collection('rezerwacje').where('date', '==', key).get()
                     .then(function(snapshot){
+                        isLoaded = true;
+                        clearTimeout(fallbackTimer);
                         var taken = [];
                         snapshot.forEach(function(doc){ taken.push(doc.data().time); });
                         renderSlots(taken);
                     })
                     .catch(function(err){
-                        console.error('Błąd połączenia z bazą, ładuję wolne sloty awaryjnie:', err);
+                        isLoaded = true;
+                        clearTimeout(fallbackTimer);
+                        console.error('Błąd pobierania rezerwacji:', err);
                         renderSlots([]);
                     });
             }
@@ -655,7 +668,6 @@
                 }
 
                 if (!db){
-                    console.warn('Firebase nieskonfigurowany — rezerwacja tylko w konsoli:', state);
                     finishBooking();
                     return;
                 }
