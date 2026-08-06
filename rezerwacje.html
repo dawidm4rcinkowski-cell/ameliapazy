@@ -134,23 +134,47 @@
                 <span class="current" data-step="1"></span>
                 <span data-step="2"></span>
                 <span data-step="3"></span>
+                <span data-step="4"></span>
             </div>
 
-            <!-- STEP 1 -->
+            <!-- STEP 1: Wybór Stylistki -->
             <div class="step active" data-step="1">
-                <span class="field-label">Wybierz usługę</span>
+                <span class="field-label">1. Wybierz Stylistkę</span>
+                <div class="service-list">
+                    <label class="service">
+                        <input type="radio" name="stylist" value="ANY" checked>
+                        <span class="service-name">Najszybszy wolny termin (Amelia lub Julia)</span>
+                    </label>
+                    <label class="service">
+                        <input type="radio" name="stylist" value="Amelia">
+                        <span class="service-name">Amelia</span>
+                    </label>
+                    <label class="service">
+                        <input type="radio" name="stylist" value="Julia">
+                        <span class="service-name">Julia</span>
+                    </label>
+                </div>
+                <div class="actions"><button type="button" class="btn-primary" id="next1">Dalej</button></div>
+            </div>
+
+            <!-- STEP 2: Usługa -->
+            <div class="step" data-step="2">
+                <span class="field-label">2. Wybierz usługę</span>
                 <div class="service-list">
                     <label class="service"><input type="radio" name="service" value="Manicure klasyczny (45 min)"><span class="service-name">Manicure klasyczny</span><span class="service-meta">45 min</span></label>
                     <label class="service"><input type="radio" name="service" value="Stylizacja żelowa (75 min)"><span class="service-name">Stylizacja żelowa</span><span class="service-meta">75 min</span></label>
                     <label class="service"><input type="radio" name="service" value="Pedicure hybrydowy (60 min)"><span class="service-name">Pedicure hybrydowy</span><span class="service-meta">60 min</span></label>
                 </div>
                 <p class="error" id="errService">Wybierz usługę.</p>
-                <div class="actions"><button type="button" class="btn-primary" id="next1">Dalej</button></div>
+                <div class="actions">
+                    <button type="button" class="btn-secondary" id="back2">Wstecz</button>
+                    <button type="button" class="btn-primary" id="next2">Dalej</button>
+                </div>
             </div>
 
-            <!-- STEP 2 -->
-            <div class="step" data-step="2">
-                <span class="field-label">Wybierz dzień</span>
+            <!-- STEP 3: Termin -->
+            <div class="step" data-step="3">
+                <span class="field-label">3. Wybierz dzień</span>
                 <div class="calendar">
                     <div class="cal-header">
                         <button type="button" class="cal-nav" id="calPrev">&lsaquo;</button>
@@ -169,30 +193,28 @@
 
                 <p class="error" id="errSlot">Wybierz dzień i godzinę.</p>
                 <div class="actions">
-                    <button type="button" class="btn-secondary" id="back2">Wstecz</button>
-                    <button type="button" class="btn-primary" id="next2">Dalej</button>
+                    <button type="button" class="btn-secondary" id="back3">Wstecz</button>
+                    <button type="button" class="btn-primary" id="next3">Dalej</button>
                 </div>
             </div>
 
-            <!-- STEP 3 -->
-            <div class="step" data-step="3">
-                <span class="field-label">Imię i nazwisko</span>
+            <!-- STEP 4: Kontakt -->
+            <div class="step" data-step="4">
+                <span class="field-label">4. Dane do rezerwacji</span>
                 <input type="text" class="input" id="clientName" placeholder="np. Anna Kowalska">
-
-                <span class="field-label">Telefon</span>
                 <input type="tel" class="input" id="clientPhone" placeholder="np. 600 123 456">
                 <p class="error" id="errContact">Podaj imię i numer telefonu.</p>
 
                 <div class="summary" id="summary"></div>
 
                 <div class="actions">
-                    <button type="button" class="btn-secondary" id="back3">Wstecz</button>
+                    <button type="button" class="btn-secondary" id="back4">Wstecz</button>
                     <button type="button" class="btn-primary" id="submitBtn">Potwierdź wizytę</button>
                 </div>
             </div>
 
-            <!-- STEP 4 -->
-            <div class="step" data-step="4">
+            <!-- STEP 5: Potwierdzenie -->
+            <div class="step" data-step="5">
                 <h3 style="text-align:center; font-size:22px; margin-bottom:10px;">Wizyta zarezerwowana!</h3>
                 <p id="confirmText" style="text-align:center; font-size:15px; color:#666;"></p>
                 <div class="actions" style="margin-top:20px;"><a href="index.html" class="btn-primary" style="text-align:center;">Wróć na stronę główną</a></div>
@@ -215,7 +237,7 @@
     var db = firebase.firestore();
 
     var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-    var state = { service:null, date:null, time:null, name:'', phone:'' };
+    var state = { stylist:'ANY', service:null, date:null, time:null, assignedStylist:null, name:'', phone:'' };
     var todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
     var calViewYear = todayMidnight.getFullYear();
     var calViewMonth = todayMidnight.getMonth();
@@ -229,19 +251,32 @@
         });
     }
 
+    // Wybór stylistki
+    document.querySelectorAll('input[name="stylist"]').forEach(input => {
+        input.addEventListener('change', function(){
+            document.querySelectorAll('input[name="stylist"]').forEach(i => i.closest('.service').classList.remove('picked'));
+            input.closest('.service').classList.add('picked');
+            state.stylist = input.value;
+        });
+    });
+
+    document.getElementById('next1').addEventListener('click', function(){ goToStep(2); });
+    document.getElementById('back2').addEventListener('click', function(){ goToStep(1); });
+
+    // Wybór usługi
     document.querySelectorAll('input[name="service"]').forEach(input => {
         input.addEventListener('change', function(){
-            document.querySelectorAll('.service').forEach(l => l.classList.remove('picked'));
+            document.querySelectorAll('input[name="service"]').forEach(i => i.closest('.service').classList.remove('picked'));
             input.closest('.service').classList.add('picked');
             state.service = input.value;
             document.getElementById('errService').classList.remove('show');
         });
     });
 
-    document.getElementById('next1').addEventListener('click', function(){
+    document.getElementById('next2').addEventListener('click', function(){
         if(!state.service){ document.getElementById('errService').classList.add('show'); return; }
         renderCalendar();
-        goToStep(2);
+        goToStep(3);
     });
 
     function pad(n){ return n < 10 ? '0' + n : '' + n; }
@@ -250,7 +285,6 @@
     function renderCalendar(){
         var grid = document.getElementById('calGrid');
         document.getElementById('calMonthLabel').textContent = MONTHS[calViewMonth] + ' ' + calViewYear;
-
         var firstDay = new Date(calViewYear, calViewMonth, 1);
         var startOffset = (firstDay.getDay() + 6) % 7;
         var daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
@@ -284,7 +318,6 @@
         state.date = key;
         state.time = null;
         renderCalendar();
-
         var d = new Date(key + 'T00:00:00');
         document.getElementById('slotsDateLabel').textContent = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
         document.getElementById('slotsWrap').style.display = 'block';
@@ -297,68 +330,88 @@
         slotsEl.innerHTML = '';
         noneEl.style.display = 'none';
 
-        db.collection('ustawienia').doc('harmonogram').get().then(function(docSettings){
-            var activeHours = ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'];
-            var blockedDates = [];
-            var blockedSlots = {};
+        var stylistsToCheck = state.stylist === 'ANY' ? ['Amelia', 'Julia'] : [state.stylist];
 
-            if(docSettings.exists){
-                var sData = docSettings.data();
-                if(sData.hours && sData.hours.length > 0) activeHours = sData.hours;
-                if(sData.blockedDates) blockedDates = sData.blockedDates;
-                if(sData.blockedSlots) blockedSlots = sData.blockedSlots;
-            }
+        // Pobieramy ustawienia i rezerwacje dla wybranych stylistek
+        Promise.all([
+            db.collection('ustawienia').doc('harmonogram_Amelia').get(),
+            db.collection('ustawienia').doc('harmonogram_Julia').get(),
+            db.collection('rezerwacje').where('date', '==', key).get()
+        ]).then(function(results){
+            var setAmelia = results[0].exists ? results[0].data() : { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
+            var setJulia = results[1].exists ? results[1].data() : { hours: ['9:00', '10:30', '12:00', '14:00', '15:30', '17:00'], blockedDates: [], blockedSlots: {} };
 
-            // 1. Sprawdź blokadę CAŁEGO DNIA
-            if(blockedDates.includes(key)){
-                noneEl.textContent = "Ten dzień jest całkowicie wyłączony z rezerwacji (salon zamknięty).";
+            var takenAmelia = [], takenJulia = [];
+            results[2].forEach(doc => {
+                var data = doc.data();
+                if(data.stylist === 'Amelia') takenAmelia.push(data.time);
+                if(data.stylist === 'Julia') takenJulia.push(data.time);
+            });
+
+            var allPossibleHours = ['8:00', '9:00', '10:30', '12:00', '13:30', '14:00', '15:30', '17:00', '18:30'];
+            var availableSlotsMap = {}; // hour -> who is available ('Amelia', 'Julia', or 'BOTH')
+
+            allPossibleHours.forEach(function(h){
+                var ameliaFree = stylistsToCheck.includes('Amelia') && 
+                                 (setAmelia.hours || []).includes(h) && 
+                                 !(setAmelia.blockedDates || []).includes(key) && 
+                                 !((setAmelia.blockedSlots || {})[key] || []).includes(h) && 
+                                 !takenAmelia.includes(h);
+
+                var juliaFree = stylistsToCheck.includes('Julia') && 
+                                (setJulia.hours || []).includes(h) && 
+                                !(setJulia.blockedDates || []).includes(key) && 
+                                !((setJulia.blockedSlots || {})[key] || []).includes(h) && 
+                                !takenJulia.includes(h);
+
+                if(ameliaFree && juliaFree) availableSlotsMap[h] = 'BOTH';
+                else if(ameliaFree) availableSlotsMap[h] = 'Amelia';
+                else if(juliaFree) availableSlotsMap[h] = 'Julia';
+            });
+
+            var hoursList = Object.keys(availableSlotsMap);
+            if(hoursList.length === 0){
+                noneEl.textContent = "Brak wolnych terminów u wybranej stylistki tego dnia.";
                 noneEl.style.display = 'block';
                 return;
             }
 
-            // Godziny zablokowane pojedynczo na ten dzień przez admina
-            var hoursBlockedByAdminThisDay = blockedSlots[key] || [];
+            hoursList.forEach(function(t){
+                var el = document.createElement('div');
+                el.className = 'slot';
+                el.textContent = t;
 
-            // 2. Pobierz rezerwacje złożone przez klientów
-            db.collection('rezerwacje').where('date', '==', key).get().then(function(snapshot){
-                var takenByClients = [];
-                snapshot.forEach(doc => takenByClients.push(doc.data().time));
+                el.addEventListener('click', function(){
+                    document.querySelectorAll('.slot').forEach(s => s.classList.remove('picked'));
+                    el.classList.add('picked');
+                    state.time = t;
+                    
+                    // Przydzielanie konkretnej stylistki
+                    var avail = availableSlotsMap[t];
+                    if(avail === 'BOTH') state.assignedStylist = (Math.random() < 0.5 ? 'Amelia' : 'Julia');
+                    else state.assignedStylist = avail;
 
-                activeHours.forEach(function(t){
-                    var el = document.createElement('div');
-                    el.className = 'slot';
-                    el.textContent = t;
-
-                    // Jeżeli godzina jest zajęta przez klienta LUB zablokowana przez admina
-                    if (takenByClients.includes(t) || hoursBlockedByAdminThisDay.includes(t)){
-                        el.classList.add('taken');
-                    } else {
-                        el.addEventListener('click', function(){
-                            document.querySelectorAll('.slot').forEach(s => s.classList.remove('picked'));
-                            el.classList.add('picked');
-                            state.time = t;
-                            document.getElementById('errSlot').classList.remove('show');
-                        });
-                    }
-                    slotsEl.appendChild(el);
+                    document.getElementById('errSlot').classList.remove('show');
                 });
+                slotsEl.appendChild(el);
             });
         });
     }
 
-    document.getElementById('back2').addEventListener('click', function(){ goToStep(1); });
-    document.getElementById('next2').addEventListener('click', function(){
+    document.getElementById('back3').addEventListener('click', function(){ goToStep(2); });
+    document.getElementById('next3').addEventListener('click', function(){
         if(!state.date || !state.time){ document.getElementById('errSlot').classList.add('show'); return; }
         updateSummary();
-        goToStep(3);
+        goToStep(4);
     });
 
-    document.getElementById('back3').addEventListener('click', function(){ goToStep(2); });
+    document.getElementById('back4').addEventListener('click', function(){ goToStep(3); });
 
     function updateSummary(){
         var d = new Date(state.date + 'T00:00:00');
         var dateStr = d.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' });
         document.getElementById('summary').innerHTML =
+            '<b>Stylistka:</b> ' + state.assignedStylist + '<br>' +
             '<b>Usługa:</b> ' + state.service + '<br>' +
             '<b>Termin:</b> ' + dateStr + ', godz. ' + state.time;
     }
@@ -376,6 +429,7 @@
         submitBtn.disabled = true;
 
         db.collection('rezerwacje').add({
+            stylist: state.assignedStylist,
             service: state.service,
             date: state.date,
             time: state.time,
@@ -385,8 +439,8 @@
         })
         .then(function(docRef) {
             document.getElementById('confirmText').innerHTML = 
-                'Dziękujemy, <b>' + nameVal + '</b>! Wizyta zarezerwowana na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
-            goToStep(4);
+                'Dziękujemy, <b>' + nameVal + '</b>! Zarezerwowano wizytę u <b>' + state.assignedStylist + '</b> na <b>' + state.date + '</b> o godz. <b>' + state.time + '</b>.';
+            goToStep(5);
         })
         .catch(function(error) {
             alert("Błąd zapisu: " + error.message);
