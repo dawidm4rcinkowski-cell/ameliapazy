@@ -134,11 +134,12 @@
             transition: all 0.3s ease;
         }
 
-        .btn-primary { background: var(--dark); color: var(--light); }
-        .btn-primary:hover { background: var(--primary); transform: translateY(-2px); }
+        /* Zmiana kolorów przycisków na zgodne z resztą podstron */
+        .btn-primary { background: var(--primary); color: var(--light); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        .btn-outline { background: transparent; border: 2px solid var(--dark); color: var(--dark); }
-        .btn-outline:hover { background: var(--dark); color: var(--light); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--light); transform: translateY(-2px); }
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
@@ -238,6 +239,7 @@
         <ul class="nav-links" id="navLinks">
             <li><a href="index.html#hero" class="active">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
+            <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
         </ul>
         <button class="hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false">
