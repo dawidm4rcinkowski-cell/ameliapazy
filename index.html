@@ -134,7 +134,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Zmiana kolorów przycisków na zgodne z resztą podstron */
         .btn-primary { background: var(--primary); color: var(--light); }
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
@@ -230,6 +229,56 @@
             .marquee-track img { width: 160px; height: 200px; }
             .marquee-track { gap: 1rem; }
         }
+
+        /* =========================================================
+           STOPKA (FOOTER)
+           ========================================================= */
+        .footer {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 4rem 5% 2rem;
+        }
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-col h3 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .footer-col p {
+            color: #d1d1d1;
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
+            line-height: 1.6;
+        }
+        .footer-col ul {
+            list-style: none;
+        }
+        .footer-col ul li {
+            margin-bottom: 0.6rem;
+        }
+        .footer-col ul a {
+            color: #d1d1d1;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+        .footer-col ul a:hover {
+            color: var(--primary);
+        }
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -237,8 +286,9 @@
     <nav id="navbar">
         <a href="index.html" class="logo">SENS.</a>
         <ul class="nav-links" id="navLinks">
-            <li><a href="index.html#hero" class="active">Start</a></li>
+            <li><a href="index.html" class="active">Start</a></li>
             <li><a href="onas.html">O nas</a></li>
+            <li><a href="inwa.html">Zarządzanie</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
         </ul>
         <button class="hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false">
@@ -292,6 +342,40 @@
             <a href="https://www.instagram.com/amelia.kurczaba.juz.nie.makeup" target="_blank" rel="noopener" class="btn btn-outline">Zobacz więcej na Instagramie</a>
         </div>
     </section>
+
+    <!-- =========================================================
+         STOPKA
+         ========================================================= -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>SENS.</h3>
+                <p>Twój wymarzony salon stylizacji paznokci. Zadbamy o każdy detal, abyś czuła się wyjątkowo od momentu wejścia, aż po kolejną wizytę.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Kontakt</h3>
+                <p>Telefon: +48 600 123 456</p>
+                <p>Email: kontakt@sens.pl</p>
+                <p>Instagram: @amelia.kurczaba</p>
+            </div>
+            <div class="footer-col">
+                <h3>Adres</h3>
+                <p>ul. Piękna 12/3</p>
+                <p>00-000 Twoje Miasto</p>
+            </div>
+            <div class="footer-col">
+                <h3>Ważne informacje</h3>
+                <ul>
+                    <li><a href="polityka.html">Polityka prywatności</a></li>
+                    <li><a href="regulamin.html">Regulamin salonu</a></li>
+                    <li><a href="rezerwacje.html">Zarezerwuj termin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SENS Salon Stylizacji Paznokci. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
 
     <!-- UI Skrypty (Efekty wizualne i nawigacja) -->
     <script>
