@@ -156,7 +156,7 @@
                 <div class="service-list">
                     <label class="service picked">
                         <input type="radio" name="stylist" value="ANY" checked>
-                        <span class="service-name">⚡ Najszybszy wolny termin</span>
+                        <span class="service-name">Najszybszy wolny termin</span>
                     </label>
                     <label class="service">
                         <input type="radio" name="stylist" value="Amelia">
@@ -188,7 +188,7 @@
             <!-- STEP 3: Wybór Terminu -->
             <div class="step" data-step="3">
                 <div id="fastModeWrap" style="display:none;">
-                    <span class="field-label"> Najbliższe wolne terminy:</span>
+                    <span class="field-label">Najbliższe wolne terminy:</span>
                     <div id="fastLoader" class="loading-spinner">Szukam najszybszych wolnych terminów...</div>
                     <div id="fastSlotsContainer" class="fast-slots"></div>
                     <p style="font-size: 13px; text-align: center; color: #888; margin-bottom: 15px;">Lub wybierz własną datę poniżej:</p>
@@ -495,8 +495,7 @@
         state.date = key;
         state.time = null;
         document.querySelectorAll('.fast-card').forEach(c => c.classList.remove('picked'));
-        
-        // Odznaczenie wszystkich innych dni w kalendarzu i podświetlenie klikniętego
+
         document.querySelectorAll('.cal-day').forEach(cell => cell.classList.remove('picked'));
         if(cellTarget) {
             cellTarget.classList.add('picked');
