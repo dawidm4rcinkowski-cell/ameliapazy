@@ -556,6 +556,8 @@
                 var slotsEl = document.getElementById('slots');
                 var loadingEl = document.getElementById('slotsLoading');
                 var noneEl = document.getElementById('slotsNone');
+                
+                // Pokaż UI ładowania
                 slotsEl.innerHTML = '';
                 noneEl.style.display = 'none';
                 loadingEl.style.display = 'block';
@@ -564,10 +566,12 @@
                     loadingEl.style.display = 'none';
                     slotsEl.innerHTML = '';
                     var anyFree = false;
+                    
                     ALL_SLOTS.forEach(function(t){
                         var el = document.createElement('div');
                         el.className = 'slot';
                         el.textContent = t;
+                        
                         if (takenTimes.indexOf(t) !== -1){
                             el.classList.add('taken');
                         } else {
@@ -581,13 +585,20 @@
                         }
                         slotsEl.appendChild(el);
                     });
-                    noneEl.style.display = anyFree ? 'none' : 'block';
+                    
+                    if(!anyFree) {
+                        noneEl.style.display = 'block';
+                    }
                 }
 
+                // GŁÓWNA ZMIANA: Zawsze próbujemy wyrenderować wszystkie sloty jako puste,
+                // nawet jeśli połączenie z bazą zawiedzie. Wcześniej skrypt zatrzymywał się w tym miejscu.
                 if (!db){
+                    console.log("Tryb offline: Renderuję wszystkie sloty jako dostępne.");
                     renderSlots([]);
                     return;
                 }
+                
                 db.collection('rezerwacje').where('date', '==', key).get()
                     .then(function(snapshot){
                         var taken = [];
@@ -595,7 +606,7 @@
                         renderSlots(taken);
                     })
                     .catch(function(err){
-                        console.error('Błąd pobierania rezerwacji:', err);
+                        console.error('Błąd połączenia z bazą, ładuję wolne sloty awaryjnie:', err);
                         renderSlots([]);
                     });
             }
