@@ -293,6 +293,7 @@
         </div>
     </section>
 
+    <!-- UI Skrypty (Efekty wizualne i nawigacja) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navbar = document.getElementById('navbar');
@@ -320,6 +321,33 @@
                 });
             });
         });
+    </script>
+
+    <!-- FIREBASE INIT (Moduły) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        
+        // Zostawiam przygotowane importy pod bazę danych - przydadzą się do systemu rezerwacji
+        // import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Twoje dokładne dane z panelu Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
+            authDomain: "pazyyyy.firebaseapp.com",
+            projectId: "pazyyyy",
+            storageBucket: "pazyyyy.firebasestorage.app",
+            messagingSenderId: "135537952133",
+            appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
+            measurementId: "G-YFWQ8J89SZ"
+        };
+
+        // Inicjalizacja Firebase
+        const app = initializeApp(firebaseConfig);
+        
+        // Inicjalizacja bazy danych (do odkomentowania przy pracy nad rezerwacjami)
+        // const db = getFirestore(app);
+
+        console.log("Firebase (projekt pazyyyy) połączone pomyślnie!");
     </script>
 </body>
 </html>
