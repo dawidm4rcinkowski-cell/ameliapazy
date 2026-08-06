@@ -118,6 +118,16 @@
         .error.show { display: block; }
 
         .loading-spinner { text-align: center; padding: 20px; color: #888; font-style: italic; }
+
+        /* Styl ukrywania pola Honeypot */
+        .hp-field {
+            opacity: 0;
+            position: absolute;
+            top: 0; left: 0;
+            height: 0; width: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -216,6 +226,12 @@
             <!-- STEP 4: Formularz Danych -->
             <div class="step" data-step="4">
                 <span class="field-label">4. Dane do rezerwacji</span>
+
+                <!-- UKRYTE POLE HONEYPOT (Antyspam) -->
+                <div class="hp-field" aria-hidden="true">
+                    <input type="text" id="hp_user_website" name="user_website" tabindex="-1" autocomplete="off">
+                </div>
+
                 <input type="text" class="input" id="clientName" placeholder="np. Anna Kowalska">
                 <input type="tel" class="input" id="clientPhone" placeholder="np. 600 123 456">
                 <p class="error" id="errContact">Podaj imię i numer telefonu.</p>
@@ -250,6 +266,9 @@
 
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
+
+    // Zabezpieczenie czasowe przed bota (wymaga min. 3 sekund od wejścia na stronę)
+    var pageLoadTime = Date.now();
 
     var MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
     var state = { stylist:'ANY', service:null, date:null, time:null, assignedStylist:null, name:'', phone:'' };
@@ -591,6 +610,25 @@
     }
 
     document.getElementById('submitBtn').addEventListener('click', function(){
+        // 1. ANTYSPAM: Weryfikacja ukrytego pola Honeypot
+        var honeypotVal = document.getElementById('hp_user_website').value;
+        if (honeypotVal !== '') {
+            console.warn("Wykryto próbę spamu (Honeypot). Zapis zablokowany.");
+            // Udajemy sukces dla bota, ale nic nie zapisujemy w bazie
+            document.getElementById('confirmText').innerHTML = 'Dziękujemy! Rezerwacja została przyjęta.';
+            goToStep(5);
+            return;
+        }
+
+        // 2. ANTYSPAM: Weryfikacja czasu wypełniania (zabezpieczenie przed błyskawicznym botem)
+        var timeElapsed = Date.now() - pageLoadTime;
+        if (timeElapsed < 2500) { // poniżej 2.5 sekundy
+            console.warn("Wykryto zbyt szybkie wysłanie formularza. Zapis zablokowany.");
+            document.getElementById('confirmText').innerHTML = 'Dziękujemy! Rezerwacja została przyjęta.';
+            goToStep(5);
+            return;
+        }
+
         var nameVal = document.getElementById('clientName').value.trim();
         var phoneVal = document.getElementById('clientPhone').value.trim();
 
