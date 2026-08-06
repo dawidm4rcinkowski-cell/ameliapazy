@@ -83,7 +83,7 @@
         .nav-links .btn-book:hover { background: var(--primary-dark); color: var(--light); }
 
         /* =========================================================
-           HAMBURGER — widoczny tylko na wąskich ekranach mobilnych
+           HAMBURGER — widoczny na węższych ekranach
            ========================================================= */
         .hamburger {
             display: none;
@@ -104,6 +104,32 @@
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .hamburger.open span:nth-child(2) { opacity: 0; }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        @media (max-width: 820px) {
+            .hamburger { display: flex; }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                background: var(--light);
+                padding: 1.5rem 5%;
+                gap: 1.2rem;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+                transform: translateY(-150%);
+                opacity: 0;
+                transition: all 0.3s ease;
+                pointer-events: none;
+            }
+            .nav-links.open {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
 
         .hero {
             min-height: calc(100vh - 80px);
@@ -142,34 +168,6 @@
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
-        }
-
-        /* Tylko na wąskich telefonach chowamy menu i pokazujemy hamburger.
-           Tablety (np. iPad w pionie, ~768-820px) zachowują pełne menu. */
-        @media (max-width: 480px) {
-            .hamburger { display: flex; }
-
-            .nav-links {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                width: 100%;
-                flex-direction: column;
-                align-items: flex-start;
-                background: var(--light);
-                padding: 1.5rem 5%;
-                gap: 1.2rem;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-                transform: translateY(-150%);
-                opacity: 0;
-                transition: all 0.3s ease;
-                pointer-events: none;
-            }
-            .nav-links.open {
-                transform: translateY(0);
-                opacity: 1;
-                pointer-events: auto;
-            }
         }
 
         /* =========================================================
@@ -287,6 +285,7 @@
         <a href="index.html" class="logo">SENS.</a>
         <ul class="nav-links" id="navLinks">
             <li><a href="index.html" class="active">Start</a></li>
+            <li><a href="cennik.html">Cennik</a></li>
             <li><a href="onas.html">O nas</a></li>
             <li><a href="rezerwacje.html" class="btn-book">Umów wizytę</a></li>
         </ul>
@@ -366,7 +365,6 @@
                 <h3>Ważne informacje</h3>
                 <ul>
                     <li><a href="polityka.html">Polityka prywatności</a></li>
-                    <li><a href="regulamin.html">Regulamin salonu</a></li>
                     <li><a href="rezerwacje.html">Zarezerwuj termin</a></li>
                 </ul>
             </div>
@@ -376,7 +374,7 @@
         </div>
     </footer>
 
-    <!-- UI Skrypty (Efekty wizualne i nawigacja) -->
+    <!-- UI Skrypty -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navbar = document.getElementById('navbar');
@@ -385,7 +383,6 @@
                 else navbar.classList.remove('scrolled');
             });
 
-            /* Menu hamburgerowe (mobile) */
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
 
@@ -395,7 +392,6 @@
                 hamburger.setAttribute('aria-expanded', isOpen);
             });
 
-            /* Zamknij menu po kliknięciu w link */
             navLinks.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     navLinks.classList.remove('open');
@@ -404,33 +400,6 @@
                 });
             });
         });
-    </script>
-
-    <!-- FIREBASE INIT (Moduły) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        
-        // Zostawiam przygotowane importy pod bazę danych - przydadzą się do systemu rezerwacji
-        // import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        // Twoje dokładne dane z panelu Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDJFf5eogJDJ2v710pCvsUS33L95bMD2zw",
-            authDomain: "pazyyyy.firebaseapp.com",
-            projectId: "pazyyyy",
-            storageBucket: "pazyyyy.firebasestorage.app",
-            messagingSenderId: "135537952133",
-            appId: "1:135537952133:web:09f8b29f462aaaf634b0ec",
-            measurementId: "G-YFWQ8J89SZ"
-        };
-
-        // Inicjalizacja Firebase
-        const app = initializeApp(firebaseConfig);
-        
-        // Inicjalizacja bazy danych (do odkomentowania przy pracy nad rezerwacjami)
-        // const db = getFirestore(app);
-
-        console.log("Firebase (projekt pazyyyy) połączone pomyślnie!");
     </script>
 </body>
 </html>
